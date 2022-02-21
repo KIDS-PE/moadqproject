@@ -1,0 +1,22 @@
+Package: moadqproject
+Title: R package for MOA CDM data quality check
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Nayeong",
+           family = "Son",
+           role = c("aut", "cre"),
+           email = "nyson@drugsafe.or.kr",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: R package for MOA CDM data quality check
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+  DBI (>= 0.1),
+  RPostgreSQL (>= 0.1),
+  SqlRender (>= 0.1),
+  plyr (>= 0.1),
+  dplyr (>= 0.1),
+  tcltk (>= 0.1)

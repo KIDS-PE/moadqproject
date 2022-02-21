@@ -1,0 +1,26 @@
+rule_id,level,table,field,rule,ref
+20001,1,Demographic,PatID,global uniqueness,
+20002,1,Demographic,Birth_Date,local uniqueness,PatID
+20003,1,Demographic,Sex,local uniqueness,PatID
+20004,1,Enrollment,PatID,global uniqueness,
+20005,1,Enrollment,Enr_Start,local uniqueness,PatID
+20006,1,Enrollment,Enr_End,local uniqueness,PatID
+20007,1,Encounter,EncounterID,global uniqueness,
+20008,1,Encounter,ADate,local uniqueness,EncounterID
+20009,1,Encounter,DDate,local uniqueness,EncounterID
+20010,1,Encounter,EncType,local uniqueness,EncounterID
+20011,2,person,person_id,global uniqueness,
+20012,2,person,year_of_birth,local uniqueness,person_id
+20013,2,person,month_of_birth,local uniqueness,person_id
+20014,2,person,day_of_birth,local uniqueness,person_id
+20015,2,person,gender_concept_id,local uniqueness,person_id
+20016,2,observation_period,observation_period_id,global uniqueness,
+20017,2,observation_period,person_id,global uniqueness,
+20018,2,drug_exposure,drug_exposure_id,global uniqueness,
+20019,2,visit_occurrence,visit_occurrence_id,global uniqueness,
+20020,2,visit_occurrence,visit_start_date,local uniqueness,visit_occurrence_id
+20021,2,visit_occurrence,visit_end_date,local uniqueness,visit_occurrence_id
+20022,2,visit_occurrence,visit_type_concept_id,local uniqueness,visit_occurrence_id
+20023,2,condition_occurrence,condition_occurrence_id,global uniqueness,
+20024,2,procedure_occurrence,procedure_occurrence_id,global uniqueness,
+20025,2,measurement,measurement_id,global uniqueness,
