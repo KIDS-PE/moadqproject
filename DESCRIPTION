@@ -19,4 +19,13 @@ Imports:
   SqlRender (>= 0.1),
   plyr (>= 0.1),
   dplyr (>= 0.1),
-  tcltk (>= 0.1)
+  tcltk (>= 0.1),
+  shiny (>= 0.1),
+  shinydashboard (>= 0.1),
+  shinydashboardPlus (>= 0.1),
+  png (>= 0.1),
+  DT (>= 0.1),
+  shinyBS (>= 0.1),
+  formattable (>= 0.1),
+  shinyWidgets (>= 0.1),
+  flexdashboard (>= 0.1)
