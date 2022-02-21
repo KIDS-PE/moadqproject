@@ -11,11 +11,9 @@ shinyServer(function(input, output, session) {
 
     observeEvent(input$run, {
       if(file.exists("data/result/con_info.RDS")==TRUE){
-        con_info<-readRDS("data/result/con_info.RDS")
-        drv<-dbDriver(con_info$dbtype)
-        connection_status<-dbCanConnect(drv, dbname=con_info$dbname, host=con_info$host, port=con_info$port, user=con_info$user, password=con_info$password)
+        con<-connect_DB()
+        connection_status<-dbIsValid(con)
         if(connection_status==TRUE){
-          con<-moadqproject::connect_DB()
           moa_consistency(con)
           moa_tablerowindex(con)
           moa_completeness(con)
@@ -155,11 +153,20 @@ shinyServer(function(input, output, session) {
 
   ### configuration page
   {
-    observeEvent(input$check_connection, {
-      drv<-dbDriver(paste(input$dbtype))
-      connection_status<-dbCanConnect(drv, dbname=input$dbname, host=input$host, port=input$port, user=input$user, 'password'=input$password)
-      if(connection_status==TRUE){showNotification("Connection is valid", type="message")} else{showNotification("Connection is invalid", type="error")}
-    })
+      observeEvent(input$check_connection, {
+
+      if(is.null(input$password)==TRUE){password.tmp=''} else{password.tmp=input$password}
+
+      connectionDetails <- createConnectionDetails(dbms=input$dbtype,
+                                                   server=paste0(input$host, '/', input$dbname),
+                                                   port=input$port,
+                                                   user=input$username,
+                                                   password=password.tmp)
+      con <- tryCatch(connect(connectionDetails), error=function(e){showNotification(paste0(e), type='err')})
+      connection_status<-tryCatch(dbIsValid(con), error=function(e){showNotification("Connection is invalid", type='err')})
+      if(connection_status==TRUE){showNotification("Connection is valid", type="message")}
+      tryCatch(disconnect(con), error=function(e){ e })
+      })
 
     observeEvent(input$save, {
       con_info<-list('site'=input$site, 'dbname'=input$dbname, 'dbtype'=input$dbtype,

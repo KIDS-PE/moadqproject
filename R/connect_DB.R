@@ -4,15 +4,27 @@
 #' @param
 #' @keywords connect
 #' @return con object
-#' @import DBI
+#' @import DatabaseConnector
 #' @export
 #' @examples
 #' connect_DB()
 
 connect_DB<-function(){
   con_info<-readRDS('data/result/con_info.RDS')
-  drv<-DBI::dbDriver(con_info$dbtype)
-  con<-DBI::dbConnect(drv, dbname=con_info$dbname, host=con_info$host, port=con_info$port, user=con_info$user, password=con_info$password)  # input password if needed
+  if(is.null(con_info$password)==TRUE){con_info$password<-''}
+  connectionDetails <- createConnectionDetails(dbms=con_info$dbtype,
+                                               server=paste0(con_info$host, '/', con_info$dbname),
+                                               port=con_info$port,
+                                               user=con_info$user,
+                                               password=con_info$password)
+
+  con <- connect(connectionDetails)
+
   return(con)
+
 }
+
+
+
+
 

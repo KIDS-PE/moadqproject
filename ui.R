@@ -6,7 +6,10 @@ ui.configuration<-{tabItem(tabName = 'Configuration',
                              fluidRow(column(width=4, textInput(width='100%', "site", "site"))),
                              fluidRow(
                                column(width=2,textInput("dbname", "DB name")),
-                               column(width=8, radioButtons("dbtype", "DBMS", choices = list('PostgreSQL', 'MySQL', 'MsSQL', 'Oracle', 'Other'), inline=TRUE))),
+                               column(width=8,
+                                      pickerInput(inputId='dbtype', label="DBMS", choices =
+                                                    list('oracle', 'postgresql', 'redshift', 'sql server', 'pdw',
+                                                         'netezza', 'bigquery', 'sqlite', 'sqlite extended', 'spark')), inline=TRUE)),
                              p(strong("Schema")),
                              fluidRow(
                                column(width=2, textInput("schemaname_lv1", "SCDM")),
