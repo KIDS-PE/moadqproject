@@ -16,15 +16,15 @@
 
 moa_validity<-function(con){
 
-  con_info<-readRDS('data/result/con_info.RDS')
+  #con_info<-readRDS('data/result/con_info.RDS')
   mydbtype=tolower(con_info$dbtype)
   myschemaname_lv1=con_info$schemaname_lv1
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
 
 
-validity_rule<-read.csv('data/rule/validity.csv', header=TRUE)
-validity_result<-validity_rule; validity_result$result<-NA
+#validity_rule<-read.csv('data/rule/validity.csv', header=TRUE)
+  validity_result<-validity_rule; validity_result$result<-NA
 
 sql1<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
 sql2<-translate('select distinct concept_id from @B.concept where @D', targetDialect = mydbtype)
@@ -56,21 +56,24 @@ for(i in validity_rule$rule_id){
 
 }
 
-saveRDS(validity_result, file = paste0('data/result/validity.rds'))
+#saveRDS(validity_result, file = paste0('data/result/validity.rds'))
+usethis::use_data(validity_result, overwrite=TRUE)
+
 
 close(pb)
 remove(tmp1); remove(tmp2); remove(tmp3); remove(tmp4); remove(tmp5)
 
-progress<-read.table('data/result/progress.txt', header=TRUE)
+#progress<-read.table('data/result/progress.txt', header=TRUE)
 progress$status[which(progress$rule=="Validity")]<-TRUE
-write.table(progress, 'data/result/progress.txt', row.names = FALSE)
+#write.table(progress, 'data/result/progress.txt', row.names = FALSE)
+usethis::use_data(progress, overwrite=TRUE)
 
 validity_result$pass<-validity_result$result==0
 
 validity_score<-aggregate(pass~level+table, validity_result, FUN=mean)
 names(validity_score)<-c('level', 'table', 'validity')
 
-saveRDS(validity_score, 'data/result/validity_score.rds')
-
+#saveRDS(validity_score, 'data/result/validity_score.rds')
+usethis::use_data(validity_score, overwrite=TRUE)
 
 }

@@ -28,4 +28,7 @@ Imports:
   shinyBS (>= 0.1),
   formattable (>= 0.1),
   shinyWidgets (>= 0.1),
-  flexdashboard (>= 0.1)
+  flexdashboard (>= 0.1),
+  usethis (>= 0.1)
+Depends: 
+    R (>= 2.10)

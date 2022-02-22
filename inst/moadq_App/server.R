@@ -3,7 +3,7 @@ shinyServer(function(input, output, session) {
 
   #### dashboard page
   {
-    check_info<-readRDS("data/result/check_info.RDS")
+    #check_info<-readRDS("data/result/check_info.RDS")
 
     output$version_info<-renderUI({
       HTML(paste("Last check :", check_info$date,"<br> MOA DQM version", check_info$version))
@@ -11,8 +11,8 @@ shinyServer(function(input, output, session) {
 
     observeEvent(input$run, {
       if(file.exists("data/result/con_info.RDS")==TRUE){
-        con<-connect_DB()
-        connection_status<-dbIsValid(con)
+        con<-tryCatch(connect_DB(), error=function(e){showNotification(paste0(e), type='err')})
+        connection_status<-tryCatch(dbIsValid(con), error=function(e){showNotification(paste0('Connection information is invalid'), type='err')})
         if(connection_status==TRUE){
           moa_consistency(con)
           moa_tablerowindex(con)
@@ -21,7 +21,7 @@ shinyServer(function(input, output, session) {
           moa_validity(con)
           moa_accuracy(con)
           update_overview()
-          progress<-read.table('data/result/progress.txt', header=TRUE)
+          #progress<-read.table('data/result/progress.txt', header=TRUE)
 
           progress$col<-'gray'
           progress$col[which(progress$status==TRUE)]<-'teal'
@@ -46,7 +46,7 @@ shinyServer(function(input, output, session) {
 
     })
 
-    progress<-read.table('data/result/progress.txt', header=TRUE)
+    #progress<-read.table('data/result/progress.txt', header=TRUE)
 
     progress$col<-'gray'
     progress$col[which(progress$status==TRUE)]<-'teal'

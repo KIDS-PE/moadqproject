@@ -10,7 +10,6 @@
 #' connect_DB()
 
 connect_DB<-function(){
-  con_info<-readRDS('data/result/con_info.RDS')
   if(is.null(con_info$password)==TRUE){con_info$password<-''}
   connectionDetails <- createConnectionDetails(dbms=con_info$dbtype,
                                                server=paste0(con_info$host, '/', con_info$dbname),

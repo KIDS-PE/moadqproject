@@ -15,13 +15,14 @@
 
 moa_consistency<-function(con){
 
-con_info<-readRDS('data/result/con_info.RDS')
+#con_info<-readRDS('data/result/con_info.RDS')
 mydbtype=tolower(con_info$dbtype)
 myschemaname_lv1=con_info$schemaname_lv1
 myschemaname_lv2=con_info$schemaname_lv2
 myvocabschemaname=con_info$schemaname_vocab
 
-consistency_rule<-read.csv('data/rule/consistency.csv', header=TRUE)
+#consistency_rule<-read.csv('data/rule/consistency.csv', header=TRUE)
+
 consistency_result<-consistency_rule
 consistency_result$result<-FALSE
 
@@ -66,16 +67,18 @@ for(i in (consistency_result%>%filter(rule=='field type consistency'))$rule_id){
 
 
 remove(tmp1); remove(tmp2); remove(tmp3)
-saveRDS(consistency_result, 'data/result/consistency.rds')
+#saveRDS(consistency_result, 'data/result/consistency.rds')
+usethis::use_data(consistency_result, overwrite = TRUE)
 
-progress<-read.table('data/result/progress.txt', header=TRUE)
+#progress<-read.table('data/result/progress.txt', header=TRUE)
 progress$status[which(progress$rule=="Consistency")]<-TRUE
-write.table(progress, 'data/result/progress.txt', row.names = FALSE)
-
+#write.table(progress, 'data/result/progress.txt', row.names = FALSE)
+usethis::use_data(progress, overwrite = TRUE)
 
 consistency_score<-aggregate(result~level+table, consistency_result, FUN=mean)
 names(consistency_score)<-c('level', 'table', 'consistency')
 
-saveRDS(consistency_score, 'data/result/consistency_score.rds')
+#saveRDS(consistency_score, 'data/result/consistency_score.rds')
+usethis::use_data(consistency_score, overwrite = TRUE)
 
 }

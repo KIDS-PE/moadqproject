@@ -19,8 +19,8 @@ moa_tablerowindex<-function(con){
 ##        Table row index        ##
 ###################################
 
-con_info<-readRDS('data/result/con_info.RDS')
-consistency_result<-readRDS('data/result/consistency.RDS')
+#con_info<-readRDS('data/result/con_info.RDS')
+#consistency_result<-readRDS('data/result/consistency.RDS')
 
 mydbtype=tolower(con_info$dbtype)
 myschemaname_lv1=con_info$schemaname_lv1
@@ -49,6 +49,7 @@ for(i in c(1:nrow(table_count))){
 close(pb)
 remove(tmp1)
 
-saveRDS(table_count, 'data/result/table_count.rds')
+#saveRDS(table_count, 'data/result/table_count.rds')
+usethis::use_data(table_count, overwrite = TRUE)
 
 }

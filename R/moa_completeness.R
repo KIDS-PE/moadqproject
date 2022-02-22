@@ -15,14 +15,15 @@
 
 moa_completeness<-function(con){
 
-  con_info<-readRDS('data/result/con_info.RDS')
+  #con_info<-readRDS('data/result/con_info.RDS')
   mydbtype=tolower(con_info$dbtype)
   myschemaname_lv1=con_info$schemaname_lv1
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
 
 
-completeness_rule<-read.csv("data/rule/completeness.csv", header=TRUE)
+#completeness_rule<-read.csv("data/rule/completeness.csv", header=TRUE)
+
 sql<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
 completeness_result<-completeness_rule; completeness_result$result<-NA
 
@@ -48,20 +49,21 @@ for(i in completeness_rule$rule_id){
 close(pb)
 remove(tmp1); remove(tmp2); remove(tmp3); remove(tmp4)
 
-saveRDS(completeness_result, file=paste0("data/result/completeness.rds"))
+#saveRDS(completeness_result, file=paste0("data/result/completeness.rds"))
+usethis::use_data(completeness_result, overwrite = TRUE)
 
-progress<-read.table('data/result/progress.txt', header=TRUE)
+#progress<-read.table('data/result/progress.txt', header=TRUE)
 progress$status[which(progress$rule=="Completeness")]<-TRUE
-write.table(progress, 'data/result/progress.txt', row.names = FALSE)
-
+#write.table(progress, 'data/result/progress.txt', row.names = FALSE)
+usethis::use_data(progress, overwrite = TRUE)
 
 completeness_result$pass<-completeness_result$result==0
 
 completeness_score<-aggregate(pass~level+table, completeness_result, FUN=mean)
 names(completeness_score)<-c('level', 'table', 'completeness')
 
-saveRDS(completeness_score, 'data/result/completeness_score.rds')
-
+#saveRDS(completeness_score, 'data/result/completeness_score.rds')
+usethis::use_data(completeness_score, overwrite = TRUE)
 
 
 }

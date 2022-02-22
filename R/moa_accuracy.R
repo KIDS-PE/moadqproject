@@ -15,17 +15,15 @@
 
 moa_accuracy<-function(con){
 
-  con_info<-readRDS('data/result/con_info.RDS')
+  #con_info<-readRDS('data/result/con_info.RDS')
   mydbtype=tolower(con_info$dbtype)
   myschemaname_lv1=con_info$schemaname_lv1
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
 
+  #table_count<-readRDS('data/result/table_count.RDS')
+  #accuracy_rule<-read.csv('data/rule/accuracy.csv', header=TRUE)
 
-  table_count<-readRDS('data/result/table_count.RDS')
-
-
-accuracy_rule<-read.csv('data/rule/accuracy.csv', header=TRUE)
 accuracy_result<-accuracy_rule; accuracy_result$result<-NA
 
 
@@ -158,12 +156,13 @@ for(i in accuracy_rule$rule_id){
 
 close(pb)
 
+usethis::use_data(accuracy_result, overwrite = TRUE)
+#saveRDS(accuracy_result, "data/result/accuracy.rds")
+#progress<-read.table('data/result/progress.txt', header=TRUE)
 
-saveRDS(accuracy_result, "data/result/accuracy.rds")
-
-progress<-read.table('data/result/progress.txt', header=TRUE)
 progress$status[which(progress$rule=="Accuracy")]<-TRUE
-write.table(progress, 'data/result/progress.txt', row.names = FALSE)
+usethis::use_data(progress, overwrite = TRUE)
+#write.table(progress, 'data/result/progress.txt', row.names = FALSE)
 
 
 accuracy_result$pass<-accuracy_result$result==0
@@ -171,7 +170,9 @@ accuracy_result$pass<-accuracy_result$result==0
 accuracy_score<-aggregate(pass~level+table, accuracy_result, FUN=mean)
 names(accuracy_score)<-c('level', 'table', 'accuracy')
 
-saveRDS(accuracy_score, 'data/result/accuracy_score.rds')
+usethis::use_data(accuracy_score, overwrite = TRUE)
+
+#saveRDS(accuracy_score, 'data/result/accuracy_score.rds')
 
 
 }

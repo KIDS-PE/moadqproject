@@ -15,15 +15,16 @@
 
 moa_uniqueness<-function(con){
 
-con_info<-readRDS('data/result/con_info.RDS')
-consistency_result<-readRDS('data/result/consistency.RDS')
+#con_info<-readRDS('data/result/con_info.RDS')
+#consistency_result<-readRDS('data/result/consistency.RDS')
 
 mydbtype=tolower(con_info$dbtype)
 myschemaname_lv1=con_info$schemaname_lv1
 myschemaname_lv2=con_info$schemaname_lv2
 myvocabschemaname=con_info$schemaname_vocab
 
-uniqueness_rule<-read.csv('data/rule/uniqueness.csv', header=TRUE)
+#uniqueness_rule<-read.csv('data/rule/uniqueness.csv', header=TRUE)
+
 uniqueness_result<-uniqueness_rule
 uniqueness_result$result<-NA
 n_iter<-nrow(uniqueness_rule)
@@ -55,19 +56,22 @@ for(i in uniqueness_rule$rule_id){
 
 close(pb)
 remove(tmp1); remove(tmp2); remove(tmp3); remove(tmp4)
-saveRDS(uniqueness_result, file=paste0("data/result/uniqueness.rds"))
+#saveRDS(uniqueness_result, file=paste0("data/result/uniqueness.rds"))
+usethis::use_data(uniqueness_result, overwrite = TRUE)
 
-progress<-read.table('data/result/progress.txt', header=TRUE)
+
+#progress<-read.table('data/result/progress.txt', header=TRUE)
 progress$status[which(progress$rule=="Uniqueness")]<-TRUE
-write.table(progress, 'data/result/progress.txt', row.names = FALSE)
+#write.table(progress, 'data/result/progress.txt', row.names = FALSE)
+usethis::use_data(progress, overwrite = TRUE)
 
 uniqueness_result$pass<-uniqueness_result$result==0
 
 uniqueness_score<-aggregate(pass~level+table, uniqueness_result, FUN=mean)
 names(uniqueness_score)<-c('level', 'table', 'uniqueness')
 
-saveRDS(uniqueness_score, 'data/result/uniqueness_score.rds')
-
+#saveRDS(uniqueness_score, 'data/result/uniqueness_score.rds')
+usethis::use_data(uniqueness_score, overwrite=TRUE)
 
 
 }

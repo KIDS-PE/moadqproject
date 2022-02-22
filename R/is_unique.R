@@ -11,7 +11,7 @@
 
 
 is_unique<-function(data){
-  uniqueness_result<-readRDS('data/result/uniqueness.rds')
+  #uniqueness_result<-readRDS('data/result/uniqueness.rds')
 
   result<-(uniqueness_result%>%filter(level==data$level & table==data$table & field==data$field))$result
   if(length(result)==0) {error_message=paste('field', data$field, 'in table', data$table, 'has no uniqueness rule')
