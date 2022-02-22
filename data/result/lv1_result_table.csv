@@ -1,8 +1,0 @@
-RULE_ID,RULE,FIELD,RESULT,COMMENT
-10001,Table name consistency,,PASS,NO ERROR
-10002,Field name consistency,PatID,PASS,NO ERROR
-10003,Table name consistency,Birth_Date,PASS,
-10004,Table name consistency,PatID,PASS,
-10005,Field name consistency,PatID,PASS,
-10006,Table name consistency,Birth_Date,PASS,NO ERROR
-10007,Table name consistency,PatID,PASS,NO ERROR
