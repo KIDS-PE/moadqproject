@@ -118,18 +118,18 @@ shinyServer(function(input, output, session) {
       observeEvent(input$check_connection, {
 
       if(is.null(input$password)==TRUE){password.tmp=''} else{password.tmp=input$password}
-      connectionDetails <- createConnectionDetails(dbms=input$dbtype,
-                                                   server=paste0(input$host, '/', input$dbname),
-                                                   port=input$port,
-                                                   user=input$username,
-                                                   password=password.tmp)
-
       tryCatch({
-        Sys.setenv("DATABASECONNECTOR_JAR_FOLDER" = input$jdbcDrivers)
-        con <- connect(connectionDetails)
-        connection_status<-dbIsValid(con)
-        if(connection_status==TRUE){showNotification("Connection is valid", type="message")}
-      }, error=function(e){showNotification("Connection is invalid", type='err')})
+       connectionDetails <- createConnectionDetails(dbms=input$dbtype,
+                                                    server=paste0(input$host, '/', input$dbname),
+                                                    port=input$port,
+                                                    user=input$username,
+                                                    password=password.tmp,
+                                                    pathToDriver = input$jdbcDrivers)
+       con <- connect(connectionDetails)
+       connection_status<-dbIsValid(con)}, error=function(e){ showNotification(paste0(e[1]), type='err')})
+      if(exists('connection_status')==TRUE){
+      if(connection_status==TRUE){showNotification("Connection is valid", type="message")
+        } else {showNotification("Connection is invalid", type='err')}} else {showNotification("Connection is invalid", type='err')}
       tryCatch(disconnect(con), error=function(e){ e })
       })
 
