@@ -9,11 +9,6 @@
 #' update_overview()
 
 update_overview<-function(){
-  #consistency_score<-readRDS("data/result/consistency_score.rds")
-  #completeness_score<-readRDS("data/result/completeness_score.rds")
-  #uniqueness_score<-readRDS("data/result/uniqueness_score.rds")
-  #validity_score<-readRDS("data/result/validity_score.rds")
-  #accuracy_score<-readRDS("data/result/accuracy_score.rds")
 
   overview<-merge(consistency_score, completeness_score, by=c('level', 'table'), all.x=TRUE, all.y=TRUE)
   overview<-merge(overview, uniqueness_score, by=c('level', 'table'), all.x=TRUE, all.y=TRUE)
@@ -25,7 +20,6 @@ update_overview<-function(){
   overview[,c('consistency', 'completeness', 'uniqueness', 'validity', 'accuracy')]<-
     round(overview[,c('consistency', 'completeness', 'uniqueness', 'validity', 'accuracy')]*100, 0)
   overview$total<-rowMeans(overview[,c('consistency', 'completeness', 'uniqueness', 'validity', 'accuracy')], na.rm = TRUE)
-  #saveRDS(overview, 'data/result/dashboard_overview.rds')
 
   usethis::use_data(overview, overwrite = TRUE)
 
@@ -41,8 +35,6 @@ update_overview<-function(){
 
   no_rules$level[which(no_rules$level==1)]<-'SCDM'
   no_rules$level[which(no_rules$level==2)]<-'OMOP'
-
-  #saveRDS(no_rules, 'data/result/no_rules.rds')
 
   usethis::use_data(no_rules, overwrite=TRUE)
 
