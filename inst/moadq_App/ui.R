@@ -45,7 +45,7 @@ ui.dashboard<-{tabItem(tabName = 'Dashboard', class = "active", shinyUI(fluidPag
           tags$head(tags$style('#box15 .box-header {display: none}')),
           tags$head(tags$style('#box21 .box-header {display: none}')), style = "height:50px;font-size: 90%;")
     )),
-  fluidRow(box(title="Overview", solidHeader=FALSE, width=12, collapsable=TRUE, formattableOutput("dashboard_overview")))
+  fluidRow(box(title="Overview", solidHeader=FALSE, width=12, collapsable=TRUE, formattableOutput("overview")))
 )))
 }
 

@@ -57,8 +57,8 @@ shinyServer(function(input, output, session) {
     output$box15<-renderUI({box(id="box15", title=NULL, width=2, align="center", "Accuracy", headerBorder = FALSE, background = progress$col[which(progress$step=='1-5')])})
     output$box21<-renderUI({box(id="box21", title=NULL, width=2, align="center", "Distribution", headerBorder = FALSE, background = progress$col[which(progress$step=='2-1')])})
 
-      output$dashboard_overview<-renderFormattable({
-        formattable(dashboard_overview, list(
+      output$overview<-renderFormattable({
+        formattable(overview, list(
           consistency=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
           uniqueness=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
           completeness=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
@@ -76,7 +76,7 @@ shinyServer(function(input, output, session) {
       if(input$tabset1=="SCDM"){
         no_rules_show<-(no_rules%>%filter(level==input$tabset1 & table==input$scdm_table))$rule_id
         table_count_show<-(table_count%>%filter(level==1 & table==input$scdm_table))$count
-        score_show<-dashboard_overview%>%filter(level==input$tabset1 & table==input$scdm_table)
+        score_show<-overview%>%filter(level==input$tabset1 & table==input$scdm_table)
         lv1_table_name<-eval(parse(text=tolower(input$lv1_rule)))
         lv1_table_show<-lv1_table_name%>%filter(level==1 & table==input$scdm_table)
 
@@ -84,7 +84,7 @@ shinyServer(function(input, output, session) {
       } else {
         no_rules_show<-(no_rules%>%filter(level==input$tabset1 & table==input$omop_table))$rule_id
         table_count_show<-(table_count%>%filter(level==2 & table==input$omop_table))$count
-        score_show<-dashboard_overview%>%filter(level==input$tabset1 & table==input$omop_table)
+        score_show<-overview%>%filter(level==input$tabset1 & table==input$omop_table)
         lv1_table_name<-eval(parse(text=tolower(input$lv1_rule)))
         lv1_table_show<-lv1_table_name%>%filter(level==2 & table==input$omop_table)
 
