@@ -1,5 +1,5 @@
 
-setwd("D://CDM//2021//DQM//MOA_DQ//moadqproject") # working directory (moadqproject)
+setwd("D://CDM//DQM//MOA_DQ//moadqproject") # working directory (moadqproject)
 
 
 library(shiny)
