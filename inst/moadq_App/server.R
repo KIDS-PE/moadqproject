@@ -119,7 +119,7 @@ shinyServer(function(input, output, session) {
 
       if(is.null(input$password)==TRUE){password.tmp=''} else{password.tmp=input$password}
 
-      Sys.setenv("DATABASECONNECTOR_JAR_FOLDER" = input$jdbcDrivers)
+      tryCatch(Sys.setenv("DATABASECONNECTOR_JAR_FOLDER" = input$jdbcDrivers), error=function(e){showNotification(paste0(e[1]), type='err')})
       connectionDetails <- createConnectionDetails(dbms=input$dbtype,
                                                    server=paste0(input$host, '/', input$dbname),
                                                    port=input$port,
