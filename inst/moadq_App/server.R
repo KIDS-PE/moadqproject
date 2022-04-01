@@ -9,8 +9,7 @@ shinyServer(function(input, output, session) {
     })
 
     observeEvent(input$run, {
-      if(file.exists("data/result/con_info.RDS")==TRUE){
-        con<-tryCatch(connect_DB(), error=function(e){showNotification(paste0(e), type='err')})
+        con<-tryCatch(connect_DB(), error=function(e){showNotification(paste0(e[1]), type='err')})
         connection_status<-tryCatch(dbIsValid(con), error=function(e){showNotification(paste0('Connection information is invalid'), type='err')})
         if(connection_status==TRUE){
           moa_consistency(con)
@@ -40,7 +39,6 @@ shinyServer(function(input, output, session) {
           })
 
         } else{showNotification("No valid connection information. Please check connection and try again! (see Configuration Page)", type="warning")}
-      } else{showNotification("No valid connection information. Please check connection and try again! (see Configuration Page)", type="warning")}
 
     })
 
@@ -121,12 +119,13 @@ shinyServer(function(input, output, session) {
 
       if(is.null(input$password)==TRUE){password.tmp=''} else{password.tmp=input$password}
 
+      Sys.setenv("DATABASECONNECTOR_JAR_FOLDER" = input$jdbcDrivers)
       connectionDetails <- createConnectionDetails(dbms=input$dbtype,
                                                    server=paste0(input$host, '/', input$dbname),
                                                    port=input$port,
                                                    user=input$username,
                                                    password=password.tmp)
-      con <- tryCatch(connect(connectionDetails), error=function(e){showNotification(paste0(e), type='err')})
+      con <- tryCatch(connect(connectionDetails), error=function(e){showNotification(paste0(e[1]), type='err')})
       connection_status<-tryCatch(dbIsValid(con), error=function(e){showNotification("Connection is invalid", type='err')})
       if(connection_status==TRUE){showNotification("Connection is valid", type="message")}
       tryCatch(disconnect(con), error=function(e){ e })
@@ -136,8 +135,18 @@ shinyServer(function(input, output, session) {
       con_info<-list('site'=input$site, 'dbname'=input$dbname, 'dbtype'=input$dbtype,
                      'schemaname_lv1'=input$schemaname_lv1, 'schemaname_lv2'=input$schemaname_lv2, 'schemaname_vocab'=input$schemaname_vocab,
                      'host'=input$host, 'port'=input$port, 'user'=input$username, 'password'=input$password)
-      saveRDS(con_info, 'data/result/con_info.RDS')
-      showNotification("Configuration saved", type="message")
+      #saveRDS(con_info, 'data/result/con_info.RDS')
+      usethis::use_data(con_info, overwrite = TRUE)
+      showNotification("Saved information", type="message")
+    })
+
+    observeEvent(input$del, {
+      con_info<-list('site'='', 'dbname'='', 'dbtype'='',
+                     'schemaname_lv1'='', 'schemaname_lv2'='', 'schemaname_vocab'='',
+                     'host'='', 'port'='', 'user'='', 'password'='')
+      #saveRDS(con_info, 'data/result/con_info.RDS')
+      usethis::use_data(con_info, overwrite = TRUE)
+      showNotification("Removed information", type="message")
     })
   }
 })

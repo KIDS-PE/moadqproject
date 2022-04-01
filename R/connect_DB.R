@@ -11,6 +11,8 @@
 
 connect_DB<-function(){
   if(is.null(con_info$password)==TRUE){con_info$password<-''}
+
+  Sys.setenv("DATABASECONNECTOR_JAR_FOLDER" = con_info$jdbcDrivers)
   connectionDetails <- createConnectionDetails(dbms=con_info$dbtype,
                                                server=paste0(con_info$host, '/', con_info$dbname),
                                                port=con_info$port,

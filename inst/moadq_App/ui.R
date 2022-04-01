@@ -3,34 +3,41 @@ ui.configuration<-{tabItem(tabName = 'Configuration',
                              tags$head(tags$style(HTML('#check_connection{background-color:lightblue}'))),
                              tags$head(tags$style(HTML('#save{background-color:salmon}'))),
                              h1('Database connection'),
-                             fluidRow(column(width=4, textInput(width='100%', "site", "site"))),
+                             fluidRow(column(width=2, textInput(width='100%', "site", "site"))),
                              fluidRow(
                                column(width=2,textInput("dbname", "DB name")),
-                               column(width=8,
+                               column(width=2,
                                       pickerInput(inputId='dbtype', label="DBMS", choices =
                                                     list('oracle', 'postgresql', 'redshift', 'sql server', 'pdw',
-                                                         'netezza', 'bigquery', 'sqlite', 'sqlite extended', 'spark')), inline=TRUE)),
+                                                         'netezza', 'bigquery', 'sqlite', 'sqlite extended', 'spark')), inline=TRUE),
+                               column(width=4, textInput("jdbcDrivers", "Path to jdbcDrivers"))),
+                             fluidRow(
+                               column(width=2, textInput("host", "Host")),
+                               column(width=2, textInput("port", "Port")),
+                               column(width=2, textInput("username", "Username")),
+                               column(width=2,  passwordInput("pw", "Password   "))),
                              p(strong("Schema")),
                              fluidRow(
                                column(width=2, textInput("schemaname_lv1", "SCDM")),
-                               column(width=5, textInput(width='100%', "schemaname_lv2", "OMOP Standardized clinical data")),
-                               column(width=5, textInput(width='100%', "schemaname_vocab", "OMOP Standardized vocabularies"))),
-                             fluidRow(
-                               column(width=2, textInput("host", "Host")),
-                               column(width=2, textInput("port", "Port"))),
-                             fluidRow(
-                               column(width=2, textInput("username", "Username")),
-                               column(width=2,  passwordInput("pw", "Password   "))),
+                               column(width=2, textInput(width='100%', "schemaname_lv2", "OMOP Standardized clinical data")),
+                               column(width=2, textInput(width='100%', "schemaname_vocab", "OMOP Standardized vocabularies"))),
+
                              fluidRow(column(width=8),
                                       div(style="display:inline-block", actionButton("check_connection", "Test connection")),
-                                      div(style="display:inline-block", actionButton("save", "SAVE")))
+                                      div(style="display:inline-block", actionButton("save", "SAVE")),
+                                      div(style="display:inline-block", actionButton("del", "Delete Info")))
                            ))}
 ui.dashboard<-{tabItem(tabName = 'Dashboard', class = "active", shinyUI(fluidPage(
-  fluidRow(column(width=3, shinydashboard::valueBox("MOA CDM", "Data Quality Check", icon=icon("thumbs-up", lib="glyphicon"), color="light-blue", width=12)),
-           column(width=4, offset=5, align="right",
-                  fluidRow(htmlOutput("version_info")),
-                  fluidRow(bsButton('run', "RUN DQM", style="danger", type="action", width=NULL, size="large")))),
   fluidRow(
+      column(width=3, shinydashboard::valueBox("MOA CDM", "Data Quality Check", icon=icon("thumbs-up", lib="glyphicon"), color="light-blue", width=12)),
+      column(width=3, offset=6, align="right",
+             column(width=11,
+             fluidRow(htmlOutput("version_info")),
+             fluidRow(bsButton('run', "RUN DQM", style="danger", type="action", width=NULL, size="large")))
+      )
+  ),
+  fluidRow(
+    column(width=12,
     box(title="Progress", solidHeader = FALSE, width=12, collapsible = TRUE,
         fluidRow(
           uiOutput("box1"), uiOutput("box2"),
@@ -44,8 +51,8 @@ ui.dashboard<-{tabItem(tabName = 'Dashboard', class = "active", shinyUI(fluidPag
           tags$head(tags$style('#box14 .box-header {display: none}')),
           tags$head(tags$style('#box15 .box-header {display: none}')),
           tags$head(tags$style('#box21 .box-header {display: none}')), style = "height:50px;font-size: 90%;")
-    )),
-  fluidRow(box(title="Overview", solidHeader=FALSE, width=12, collapsable=TRUE, formattableOutput("overview")))
+    ))),
+  fluidRow(column(width=12, box(title="Overview", solidHeader=FALSE, width=12, collapsable=TRUE, formattableOutput("overview"))))
 )))
 }
 
