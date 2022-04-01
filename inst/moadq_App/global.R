@@ -1,7 +1,4 @@
 
-setwd("D://CDM//DQM//MOA_DQ//moadqproject") # working directory (moadqproject)
-
-
 library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)

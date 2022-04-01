@@ -77,7 +77,7 @@ shinyServer(function(input, output, session) {
         no_rules_show<-(no_rules%>%filter(level==input$tabset1 & table==input$scdm_table))$rule_id
         table_count_show<-(table_count%>%filter(level==1 & table==input$scdm_table))$count
         score_show<-overview%>%filter(level==input$tabset1 & table==input$scdm_table)
-        lv1_table_name<-eval(parse(text=tolower(input$lv1_rule)))
+        lv1_table_name<-eval(parse(text=tolower(paste0(input$lv1_rule, '_result'))))
         lv1_table_show<-lv1_table_name%>%filter(level==1 & table==input$scdm_table)
 
 
@@ -85,7 +85,7 @@ shinyServer(function(input, output, session) {
         no_rules_show<-(no_rules%>%filter(level==input$tabset1 & table==input$omop_table))$rule_id
         table_count_show<-(table_count%>%filter(level==2 & table==input$omop_table))$count
         score_show<-overview%>%filter(level==input$tabset1 & table==input$omop_table)
-        lv1_table_name<-eval(parse(text=tolower(input$lv1_rule)))
+        lv1_table_name<-eval(parse(text=tolower(paste0(input$lv1_rule, '_result'))))
         lv1_table_show<-lv1_table_name%>%filter(level==2 & table==input$omop_table)
 
       }
