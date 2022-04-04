@@ -6,34 +6,47 @@
 #' @return csv file
 #' @import DBI
 #' @import dplyr
-#' @import RPostgreSQL
 #' @import SqlRender
 #' @import tcltk
+#' @import foreach
+#' @import doParallel
 #' @export
 #' @examples
 #' moa_consistency(x)
 
 moa_consistency<-function(con){
+  con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
 
-#con_info<-readRDS('data/result/con_info.RDS')
-mydbtype=tolower(con_info$dbtype)
-myschemaname_lv1=con_info$schemaname_lv1
-myschemaname_lv2=con_info$schemaname_lv2
-myvocabschemaname=con_info$schemaname_vocab
+  #con_info<-readRDS('data/result/con_info.RDS')
+  mydbtype=tolower(con_info$dbtype)
+  myschemaname_lv1=con_info$schemaname_lv1
+  myschemaname_lv2=con_info$schemaname_lv2
+  myvocabschemaname=con_info$schemaname_vocab
 
-#consistency_rule<-read.csv('data/rule/consistency.csv', header=TRUE)
+  #consistency_rule<-read.csv('data/rule/consistency.csv', header=TRUE)
 
-consistency_result<-consistency_rule
-consistency_result$result<-FALSE
+  n_core<-detectCores()
+  cl=makeCluster(n_core-1)
+  registerDoParallel(cl)
+
+  clusterEvalQ(cl, {
+    library(moadqproject)
+    con <- connect_DB()
+    NULL
+  })
 
 # table name consistency
 sql<-translate("select table_name from information_schema.tables where table_schema='@A'", targetDialect = mydbtype)
 
-for(i in (consistency_result%>%filter(rule=='table name consistency'))$rule_id){
-  tmp1<-which(consistency_result$rule_id==i); tmp2<-consistency_result[tmp1,]
+i1=(consistency_rule%>%filter(rule=='table name consistency'))$rule_id
+
+foreach(i=i1, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'tcltk'), .noexport="con")%dopar%{
+  tmp1<-which(consistency_rule$rule_id==i); tmp2<-consistency_rule[tmp1,]
   if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
   tmp3<-dbGetQuery(con, render(sql, A=schema))
-  consistency_result$result[tmp1]<-(tmp2$ref)%in%tmp3$table_name==TRUE
+  res<-cbind(tmp2, (tmp2$ref)%in%tmp3$table_name==TRUE)
+
+  res
 }
 
 remove(tmp1); remove(tmp2); remove(tmp3)

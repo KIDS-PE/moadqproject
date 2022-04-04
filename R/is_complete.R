@@ -10,7 +10,8 @@
 #' is_complete(x)
 
 is_complete<-function(data){
-  #completeness_result<-readRDS('data/result/completeness.rds')
+
+  completeness_result<-readRDS('results/completeness.rds')
 
   result<-(completeness_result%>%filter(level==data$level & table==data$table & field==data$field))$'result'
   if(length(result)==0) {error_message=paste('field', data$field, 'in table', data$table, 'has no completeness rule')

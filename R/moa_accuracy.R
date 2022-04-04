@@ -9,13 +9,16 @@
 #' @import RPostgreSQL
 #' @import SqlRender
 #' @import tcltk
+#' @import foreach
+#' @import doParallel
 #' @export
 #' @examples
 #' moa_accuracy(x)
 
 moa_accuracy<-function(con){
 
-  #con_info<-readRDS('data/result/con_info.RDS')
+  con_info<-load(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
+
   mydbtype=tolower(con_info$dbtype)
   myschemaname_lv1=con_info$schemaname_lv1
   myschemaname_lv2=con_info$schemaname_lv2
@@ -24,8 +27,9 @@ moa_accuracy<-function(con){
   #table_count<-readRDS('data/result/table_count.RDS')
   #accuracy_rule<-read.csv('data/rule/accuracy.csv', header=TRUE)
 
-accuracy_result<-accuracy_rule; accuracy_result$result<-NA
-
+  n_core<-detectCores()
+  cl=makeCluster(n_core-1)
+  registerDoParallel(cl)
 
 prerequisite<-function(x){
   prerequisite_result<-c(tmp2$level, tmp2$table, tmp2$field, tmp2$level, tmp2$table, tmp2$ref_key,
