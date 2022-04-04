@@ -14,7 +14,7 @@
 #' moa_validity(x)
 
 
-moa_validity<-function(con){
+moa_validity<-function(){
 
   con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
 

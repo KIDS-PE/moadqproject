@@ -14,7 +14,7 @@
 #' @examples
 #' moa_tablerowindex(x)
 
-moa_tablerowindex<-function(con){
+moa_tablerowindex<-function(){
 
 ###################################
 ##        Table row index        ##

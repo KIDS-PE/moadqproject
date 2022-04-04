@@ -14,7 +14,7 @@
 #' @examples
 #' moa_accuracy(x)
 
-moa_accuracy<-function(con){
+moa_accuracy<-function(){
 
   con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
 

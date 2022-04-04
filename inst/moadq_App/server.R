@@ -4,6 +4,8 @@ shinyServer(function(input, output, session) {
   #### dashboard page
   {
 
+    check_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/check_info.rds'))
+
     output$version_info<-renderUI({
       HTML(paste("Last check :", check_info$date,"<br> MOA DQM version", check_info$version))
     })
@@ -12,13 +14,15 @@ shinyServer(function(input, output, session) {
         con<-tryCatch(connect_DB(), error=function(e){showNotification(paste0(e[1]), type='err')})
         connection_status<-tryCatch(dbIsValid(con), error=function(e){showNotification(paste0('Connection information is invalid'), type='err')})
         if(connection_status==TRUE){
-          moa_consistency(con)
-          moa_tablerowindex(con)
-          moa_completeness(con)
-          moa_uniqueness(con)
-          moa_validity(con)
-          moa_accuracy(con)
+          moa_consistency()
+          moa_tablerowindex()
+          moa_completeness()
+          moa_uniqueness()
+          moa_validity()
+          moa_accuracy()
           update_overview()
+
+          progress<-read.table(file.path(system.file(package="moadqproject"), 'results/progress.txt'))
 
           progress$col<-'gray'
           progress$col[which(progress$status==TRUE)]<-'teal'
@@ -55,6 +59,8 @@ shinyServer(function(input, output, session) {
     output$box15<-renderUI({box(id="box15", title=NULL, width=2, align="center", "Accuracy", headerBorder = FALSE, background = progress$col[which(progress$step=='1-5')])})
     output$box21<-renderUI({box(id="box21", title=NULL, width=2, align="center", "Distribution", headerBorder = FALSE, background = progress$col[which(progress$step=='2-1')])})
 
+    overview<-readRDS(file.path(system.file(package="moadqproject"), 'results/overview.rds'))
+
       output$overview<-renderFormattable({
         formattable(overview, list(
           consistency=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
@@ -67,6 +73,10 @@ shinyServer(function(input, output, session) {
   }
 
   #### level 1 page
+
+  no_rules<-readRDS(file.path(system.file(package="moadqproject"), 'results/no_rules.rds'))
+  table_count<-readRDS(file.path(system.file(package="moadqproject"), 'results/table_count.rds'))
+
   observeEvent(input$tabset1, {
 
     observeEvent(list(input$scdm_table, input$omop_table, input$lv1_rule), {
@@ -137,8 +147,7 @@ shinyServer(function(input, output, session) {
       con_info<-list('site'=input$site, 'dbname'=input$dbname, 'dbtype'=input$dbtype,
                      'schemaname_lv1'=input$schemaname_lv1, 'schemaname_lv2'=input$schemaname_lv2, 'schemaname_vocab'=input$schemaname_vocab,
                      'host'=input$host, 'port'=input$port, 'user'=input$username, 'password'=input$password)
-      #saveRDS(con_info, 'data/result/con_info.RDS')
-      usethis::use_data(con_info, overwrite = TRUE)
+      saveRDS(con_info, file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
       showNotification("Saved information", type="message")
     })
 
@@ -146,8 +155,7 @@ shinyServer(function(input, output, session) {
       con_info<-list('site'='', 'dbname'='', 'dbtype'='',
                      'schemaname_lv1'='', 'schemaname_lv2'='', 'schemaname_vocab'='',
                      'host'='', 'port'='', 'user'='', 'password'='')
-      #saveRDS(con_info, 'data/result/con_info.RDS')
-      usethis::use_data(con_info, overwrite = TRUE)
+      saveRDS(con_info, file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
       showNotification("Removed information", type="message")
     })
   }

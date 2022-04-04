@@ -14,7 +14,7 @@
 #' @examples
 #' moa_uniqueness(x)
 
-moa_uniqueness<-function(con){
+moa_uniqueness<-function(){
 
 con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
 
