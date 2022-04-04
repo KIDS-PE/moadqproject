@@ -2,8 +2,13 @@ ui.configuration<-{tabItem(tabName = 'Configuration',
                            fluidPage(
                              tags$head(tags$style(HTML('#check_connection{background-color:lightblue}'))),
                              tags$head(tags$style(HTML('#save{background-color:salmon}'))),
-                             h1('Database connection'),
-                             fluidRow(column(width=2, textInput(width='100%', "site", "site"))),
+                             h1('Configuration'),
+                             fluidRow(
+                               box(title="Site", solidHeader = FALSE, width=12, collapsible = TRUE,
+                                   fluidRow(column(width=2, textInput(width='100%', "site", "name")))
+                              )),
+                             fluidRow(
+                               box(title="DB connection", solidHeader = FALSE, width=12, collapsible = TRUE,
                              fluidRow(
                                column(width=2,textInput("dbname", "DB name")),
                                column(width=2,
@@ -15,13 +20,15 @@ ui.configuration<-{tabItem(tabName = 'Configuration',
                                column(width=2, textInput("host", "Host")),
                                column(width=2, textInput("port", "Port")),
                                column(width=2, textInput("username", "Username")),
-                               column(width=2,  passwordInput("pw", "Password   "))),
-                             p(strong("Schema")),
+                               column(width=2,  passwordInput("pw", "Password   ")))
+                             )),
                              fluidRow(
-                               column(width=2, textInput("schemaname_lv1", "SCDM")),
-                               column(width=2, textInput(width='100%', "schemaname_lv2", "OMOP Standardized clinical data")),
-                               column(width=2, textInput(width='100%', "schemaname_vocab", "OMOP Standardized vocabularies"))),
-
+                               box(title="Schema", solidHeader = FALSE, width=12, collapsible = TRUE,
+                                   fluidRow(
+                                     column(width=2, textInput("schemaname_lv1", "SCDM")),
+                                     column(width=2, textInput(width='100%', "schemaname_lv2", "OMOP Standardized clinical data")),
+                                     column(width=2, textInput(width='100%', "schemaname_vocab", "OMOP Standardized vocabularies")))
+                             )),
                              fluidRow(column(width=8),
                                       div(style="display:inline-block", actionButton("check_connection", "Test connection")),
                                       div(style="display:inline-block", actionButton("save", "SAVE")),
