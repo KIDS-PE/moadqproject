@@ -10,6 +10,7 @@
 #' @import tcltk
 #' @import foreach
 #' @import doParallel
+#' @import parallel
 #' @export
 #' @examples
 #' moa_consistency(x)
