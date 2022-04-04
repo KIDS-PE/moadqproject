@@ -11,7 +11,7 @@
 
 connect_DB<-function(){
 
-  con_info<-load(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
+  con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
 
   if(is.null(con_info$password)==TRUE){con_info$password<-''}
 
