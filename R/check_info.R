@@ -10,5 +10,5 @@
 
 check_info<-function(){
   check_info<-list("date"=Sys.time(), "version"="1.0")
-  usethis::use_data(check_info, overwrite = TRUE)
+  saveRDS(check_info, file.path(system.file(package='moadqproject'), 'results/check_info.rds'))
 }

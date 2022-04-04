@@ -10,6 +10,9 @@
 #' connect_DB()
 
 connect_DB<-function(){
+
+  con_info<-load(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
+
   if(is.null(con_info$password)==TRUE){con_info$password<-''}
 
   Sys.setenv("DATABASECONNECTOR_JAR_FOLDER" = con_info$jdbcDrivers)
