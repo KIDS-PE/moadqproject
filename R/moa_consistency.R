@@ -40,30 +40,34 @@ sql<-translate("select table_name from information_schema.tables where table_sch
 
 i1=(consistency_rule%>%filter(rule=='table name consistency'))$rule_id
 
-foreach(i=i1, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'tcltk'), .noexport="con")%dopar%{
+round1<-foreach(i=i1, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'tcltk'), .noexport="con")%dopar%{
   tmp1<-which(consistency_rule$rule_id==i); tmp2<-consistency_rule[tmp1,]
   if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
   tmp3<-dbGetQuery(con, render(sql, A=schema))
-  res<-cbind(tmp2, (tmp2$ref)%in%tmp3$table_name==TRUE)
+  result<-(tmp2$ref)%in%tmp3$table_name==TRUE
+  cbind(tmp2, result)
+  }
 
-  res
-}
-
-remove(tmp1); remove(tmp2); remove(tmp3)
+round1
 
 # field name consistency
 sql<-translate("select column_name from information_schema.columns where table_schema='@A' and table_name='@B'", targetDialect=mydbtype)
 
-for(i in (consistency_result%>%filter(rule=='field name consistency'))$rule_id){
+i2=(consistency_rule%>%filter(rule=='field name consistency'))$rule_id
+
+round2<-foreach(i=i2, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'tcltk'), .noexport="con")%dopar%{
   tmp1<-which(consistency_result$rule_id==i); tmp2<-consistency_result[tmp1,]
   if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
   tmp3<-dbGetQuery(con, render(sql, A=schema, B=tmp2$table))
-  consistency_result$result[tmp1]<-(tmp2$ref%in%tmp3$column_name==TRUE)
+  result<-(tmp2$ref%in%tmp3$column_name==TRUE)
+  cbind(tmp2, result)
 }
 
-remove(tmp1); remove(tmp2); remove(tmp3)
-
 # field type consistency
+
+#### datatype 자료 처리부터
+
+
 search_type<-read.csv('data/rule/datatype.csv', header=TRUE)
 sql<-translate("select data_type from information_schema.columns where table_schema='@A' and table_name='@B' and column_name='@C'", targetDialect = mydbtype)
 
