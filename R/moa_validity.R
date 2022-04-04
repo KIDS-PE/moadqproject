@@ -16,6 +16,8 @@
 
 moa_validity<-function(con){
 
+  con_info<-load(file.path(system.file(package="moadqproject"), 'data', 'con_info.rda'))
+
   #con_info<-readRDS('data/result/con_info.RDS')
   mydbtype=tolower(con_info$dbtype)
   myschemaname_lv1=con_info$schemaname_lv1

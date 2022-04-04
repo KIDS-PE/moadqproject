@@ -18,6 +18,8 @@ moa_uniqueness<-function(con){
 #con_info<-readRDS('data/result/con_info.RDS')
 #consistency_result<-readRDS('data/result/consistency.RDS')
 
+con_info<-load(file.path(system.file(package="moadqproject"), 'data', 'con_info.rda'))
+
 mydbtype=tolower(con_info$dbtype)
 myschemaname_lv1=con_info$schemaname_lv1
 myschemaname_lv2=con_info$schemaname_lv2
