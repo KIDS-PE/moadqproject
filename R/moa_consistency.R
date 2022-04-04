@@ -14,7 +14,7 @@
 #' @examples
 #' moa_consistency(x)
 
-moa_consistency<-function(con){
+moa_consistency<-function(){
   con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
 
   #con_info<-readRDS('data/result/con_info.RDS')
@@ -37,7 +37,6 @@ moa_consistency<-function(con){
 
 # table name consistency
 sql<-translate("select table_name from information_schema.tables where table_schema='@A'", targetDialect = mydbtype)
-
 i1=(consistency_rule%>%filter(rule=='table name consistency'))$rule_id
 
 round1<-foreach(i=i1, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'tcltk'), .noexport="con")%dopar%{
@@ -48,15 +47,12 @@ round1<-foreach(i=i1, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', '
   cbind(tmp2, result)
   }
 
-round1
-
 # field name consistency
 sql<-translate("select column_name from information_schema.columns where table_schema='@A' and table_name='@B'", targetDialect=mydbtype)
-
 i2=(consistency_rule%>%filter(rule=='field name consistency'))$rule_id
 
 round2<-foreach(i=i2, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'tcltk'), .noexport="con")%dopar%{
-  tmp1<-which(consistency_result$rule_id==i); tmp2<-consistency_result[tmp1,]
+  tmp1<-which(consistency_rule$rule_id==i); tmp2<-consistency_rule[tmp1,]
   if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
   tmp3<-dbGetQuery(con, render(sql, A=schema, B=tmp2$table))
   result<-(tmp2$ref%in%tmp3$column_name==TRUE)
@@ -65,37 +61,33 @@ round2<-foreach(i=i2, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', '
 
 # field type consistency
 
-#### datatype 자료 처리부터
-
-
-search_type<-read.csv('data/rule/datatype.csv', header=TRUE)
 sql<-translate("select data_type from information_schema.columns where table_schema='@A' and table_name='@B' and column_name='@C'", targetDialect = mydbtype)
+i3=(consistency_rule%>%filter(rule=='field type consistency'))$rule_id
 
-for(i in (consistency_result%>%filter(rule=='field type consistency'))$rule_id){
-  tmp1<-which(consistency_result$rule_id==i); tmp2<-consistency_result[tmp1,]
-  if((consistency_result%>%filter(rule=='field name consistency' & level==tmp2$level & table==tmp2$table & field==tmp2$field))$result==TRUE){
+round3<-foreach(i=i3, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'tcltk'), .noexport="con")%dopar%{
+  tmp1<-which(consistency_rule$rule_id==i); tmp2<-consistency_rule[tmp1,]
+  if((round2%>%filter(rule=='field name consistency' & level==tmp2$level & table==tmp2$table & field==tmp2$field))$result==TRUE){
     if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
     tmp3<-dbGetQuery(con, render(sql, A=schema, B=tmp2$table, C=tmp2$field)); tmp3$type<-''
     for(j in c(1:nrow(search_type))){tmp3$type[grep(paste0(search_type$type_detail[j]), tmp3$data_type)]<-search_type$type[j]}
-    consistency_result$result[tmp1]<-(tmp2$ref==tmp3$type)
+    result<-(tmp2$ref==tmp3$type)
   }
-  else{consistency_result$result[tmp1]<-NA}
+  else{result<-NA}
+  cbind(tmp2, result)
 }
 
 
-remove(tmp1); remove(tmp2); remove(tmp3)
-#saveRDS(consistency_result, 'data/result/consistency.rds')
-usethis::use_data(consistency_result, overwrite = TRUE)
+consistency_result<-rbind(round1, round2, round3)
 
-#progress<-read.table('data/result/progress.txt', header=TRUE)
+saveRDS(consistency_result, 'result/consistency.rds')
+
+progress<-read.table('result/progress.txt', header=TRUE)
 progress$status[which(progress$rule=="Consistency")]<-TRUE
-#write.table(progress, 'data/result/progress.txt', row.names = FALSE)
-usethis::use_data(progress, overwrite = TRUE)
+write.table(progress, 'result/progress.txt', row.names = FALSE)
 
 consistency_score<-aggregate(result~level+table, consistency_result, FUN=mean)
 names(consistency_score)<-c('level', 'table', 'consistency')
 
-#saveRDS(consistency_score, 'data/result/consistency_score.rds')
-usethis::use_data(consistency_score, overwrite = TRUE)
+saveRDS(consistency_score, 'result/consistency_score.rds')
 
 }
