@@ -7,7 +7,6 @@
 #' @import DBI
 #' @import dplyr
 #' @import SqlRender
-#' @import tcltk
 #' @import foreach
 #' @import doParallel
 #' @import parallel
@@ -16,15 +15,13 @@
 #' moa_consistency(x)
 
 moa_consistency<-function(){
+
   con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
 
-  #con_info<-readRDS('data/result/con_info.RDS')
   mydbtype=tolower(con_info$dbtype)
   myschemaname_lv1=con_info$schemaname_lv1
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
-
-  #consistency_rule<-read.csv('data/rule/consistency.csv', header=TRUE)
 
   n_core<-detectCores()
   cl=makeCluster(n_core-1)
@@ -40,7 +37,7 @@ moa_consistency<-function(){
 sql<-translate("select table_name from information_schema.tables where table_schema='@A'", targetDialect = mydbtype)
 i1=(consistency_rule%>%filter(rule=='table name consistency'))$rule_id
 
-round1<-foreach(i=i1, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'tcltk'), .noexport="con")%dopar%{
+round1<-foreach(i=i1, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI'), .noexport="con")%dopar%{
   tmp1<-which(consistency_rule$rule_id==i); tmp2<-consistency_rule[tmp1,]
   if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
   tmp3<-dbGetQuery(con, render(sql, A=schema))

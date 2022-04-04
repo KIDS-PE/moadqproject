@@ -7,9 +7,9 @@
 #' @import DBI
 #' @import dplyr
 #' @import SqlRender
-#' @import tcltk
 #' @import foreach
 #' @import doParallel
+#' @import parallel
 #' @export
 #' @examples
 #' moa_completeness(x)
@@ -34,13 +34,9 @@ moa_completeness<-function(){
   })
 
   sql<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
-#  n_iter<-nrow(completeness_rule)
-#  pb <- tkProgressBar(title = "Checking completeness", label = "Percentage completed", min = 0, max = n_iter,initial = 0, width = 500)
 
-#  clusterExport(cl, c('pb', 'n_iter'))
-
-completeness_result <- foreach(i=completeness_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI'), .noexport="con")%dopar%{
-
+completeness_result <-
+  foreach(i=completeness_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI'), .noexport="con")%dopar%{
     tmp1<-which(completeness_rule$rule_id==i); tmp2<-completeness_rule[tmp1,]
     if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
     if(is_consistent(tmp2)[[1]]==TRUE){
@@ -53,11 +49,6 @@ completeness_result <- foreach(i=completeness_rule$rule_id, .combine=rbind, .pac
     cbind(tmp2, result)
 
   }
-
-#  pctg <- paste(round(tmp1/n_iter *100, 0), "% completed |", tmp2$table, "-", tmp2$field)
-#  setTkProgressBar(pb, tmp1, label = pctg)
-
-#close(pb)
 
 saveRDS(completeness_result, file.path(system.file(package="moadqproject"), 'results/completeness.rds'))
 

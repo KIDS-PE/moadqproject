@@ -10,6 +10,12 @@
 
 update_overview<-function(){
 
+  consistency_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/consistency.rds'))
+  completeness_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/completeness.rds'))
+  uniqueness_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/uniqueness.rds'))
+  validity_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/validity.rds'))
+  accuracy_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/accuracy.rds'))
+
   overview<-merge(consistency_score, completeness_score, by=c('level', 'table'), all.x=TRUE, all.y=TRUE)
   overview<-merge(overview, uniqueness_score, by=c('level', 'table'), all.x=TRUE, all.y=TRUE)
   overview<-merge(overview, validity_score, by=c('level', 'table'), all.x=TRUE, all.y=TRUE)
@@ -21,8 +27,7 @@ update_overview<-function(){
     round(overview[,c('consistency', 'completeness', 'uniqueness', 'validity', 'accuracy')]*100, 0)
   overview$total<-rowMeans(overview[,c('consistency', 'completeness', 'uniqueness', 'validity', 'accuracy')], na.rm = TRUE)
 
-  usethis::use_data(overview, overwrite = TRUE)
-
+  saveRDS(overview, file.path(system.file(package="moadqproject"), 'results/overview.rds'))
 
   no_rules<-rbind(
     aggregate(rule_id~level+table, consistency_result, length),
@@ -36,6 +41,6 @@ update_overview<-function(){
   no_rules$level[which(no_rules$level==1)]<-'SCDM'
   no_rules$level[which(no_rules$level==2)]<-'OMOP'
 
-  usethis::use_data(no_rules, overwrite=TRUE)
+  saveRDS(no_rules, file.path(system.file(package="moadqproject"), 'results/no_rules.rds'))
 
   }
