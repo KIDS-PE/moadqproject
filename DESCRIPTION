@@ -31,6 +31,6 @@ Imports:
   usethis (>= 0.1),
   DatabaseConnector (>= 0.1),
   foreach (>= 0.1),
-  DoParallel (>= 0.1)
+  doParallel (>= 0.1)
 Depends: 
     R (>= 2.10)
