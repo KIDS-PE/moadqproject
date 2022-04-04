@@ -15,7 +15,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
   DBI (>= 0.1),
-  RPostgreSQL (>= 0.1),
   SqlRender (>= 0.1),
   plyr (>= 0.1),
   dplyr (>= 0.1),
@@ -29,6 +28,9 @@ Imports:
   formattable (>= 0.1),
   shinyWidgets (>= 0.1),
   flexdashboard (>= 0.1),
-  usethis (>= 0.1)
+  usethis (>= 0.1),
+  DatabaseConnector (>= 0.1),
+  foreach (>= 0.1),
+  DoParallel (>= 0.1)
 Depends: 
     R (>= 2.10)

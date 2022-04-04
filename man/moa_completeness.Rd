@@ -4,7 +4,7 @@
 \alias{moa_completeness}
 \title{moa_completeness function}
 \usage{
-moa_completeness(con)
+moa_completeness()
 }
 \value{
 csv file

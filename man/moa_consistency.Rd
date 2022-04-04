@@ -4,7 +4,7 @@
 \alias{moa_consistency}
 \title{moa_consistency function}
 \usage{
-moa_consistency(con)
+moa_consistency()
 }
 \value{
 csv file
