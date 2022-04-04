@@ -79,15 +79,17 @@ round3<-foreach(i=i3, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', '
 
 consistency_result<-rbind(round1, round2, round3)
 
-saveRDS(consistency_result, 'result/consistency.rds')
+saveRDS(consistency_result, file.path(system.file(package="moadqproject"), 'results/consistency.rds'))
 
-progress<-read.table('result/progress.txt', header=TRUE)
+progress<-read.table(file.path(system.file(package='moadqproject'), 'results/progress.txt'), header=TRUE)
 progress$status[which(progress$rule=="Consistency")]<-TRUE
-write.table(progress, 'result/progress.txt', row.names = FALSE)
+write.table(progress, file.path(system.file(package='moadqproject'), 'results/progress.txt'), row.names = FALSE)
 
 consistency_score<-aggregate(result~level+table, consistency_result, FUN=mean)
 names(consistency_score)<-c('level', 'table', 'consistency')
 
-saveRDS(consistency_score, 'result/consistency_score.rds')
+saveRDS(consistency_score, file.path(system.file(package='moadqproject'), 'results/consistency_score.rds'))
+
+stopCluster(cl)
 
 }
