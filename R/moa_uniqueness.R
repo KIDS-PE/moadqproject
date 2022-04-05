@@ -26,9 +26,7 @@ myschemaname_lv2=con_info$schemaname_lv2
 myvocabschemaname=con_info$schemaname_vocab
 
 n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
-
 clusterEvalQ(cl, { library(moadqproject); con <- connect_DB(); NULL })
-clusterExport(cl, c('uniqueness_rule', 'mydbtype', 'myschemaname_lv1', 'myschemaname_lv2'))
 
 iterations<-nrow(uniqueness_rule); pb <- txtProgressBar(max = iterations, style = 3)
 progress <- function(n) setTxtProgressBar(pb, n); opts <- list(progress = progress)

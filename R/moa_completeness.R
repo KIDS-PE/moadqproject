@@ -25,17 +25,13 @@ moa_completeness<-function(){
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
 
-  n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
-
   sql<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
 
+  n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
   clusterEvalQ(cl, {library(moadqproject); con <- connect_DB(); NULL})
-  clusterExport(cl, c('sql', 'completeness_rule', 'sql', 'myschemaname_lv1', 'myschemaname_lv2'))
 
-  iterations<-nrow(completeness_rule)
-  pb <- txtProgressBar(max = iterations, style = 3)
-  progress <- function(n) setTxtProgressBar(pb, n)
-  opts <- list(progress = progress)
+  iterations<-nrow(completeness_rule); pb <- txtProgressBar(max = iterations, style = 3)
+  progress <- function(n) setTxtProgressBar(pb, n); opts <- list(progress = progress)
 
 completeness_result <-
   foreach(i=completeness_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'moadqproject'), .noexport="con", .options.snow = opts)%dopar%{

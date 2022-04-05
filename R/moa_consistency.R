@@ -26,7 +26,6 @@ moa_consistency<-function(){
   myvocabschemaname=con_info$schemaname_vocab
 
   n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
-
   clusterEvalQ(cl, { library(moadqproject); con <- connect_DB(); NULL })
 
   # table name consistency
@@ -36,7 +35,7 @@ moa_consistency<-function(){
   progress <- function(n) setTxtProgressBar(pb, n); opts <- list(progress = progress)
 
   round1<-foreach(i=i1, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI'),
-                  .noexport="con", .export=c('consistency_rule', 'mydbtype', 'myschemaname_lv1', 'myschemaname_lv2'), .options.snow = opts)%dopar%{
+                  .noexport="con", .options.snow = opts)%dopar%{
     sql<-translate("select table_name from information_schema.tables where table_schema='@A'", targetDialect = mydbtype)
     tmp1<-which(consistency_rule$rule_id==i); tmp2<-consistency_rule[tmp1,]
     if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}

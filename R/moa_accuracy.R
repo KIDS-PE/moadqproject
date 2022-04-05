@@ -25,11 +25,6 @@ moa_accuracy<-function(){
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
 
-  n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
-
-  clusterEvalQ(cl, { library(moadqproject); con <- connect_DB(); NULL })
-  clusterExport(cl, c('accuracy_rule', 'mydbtype', 'myschemaname_lv1', 'myschemaname_lv2'))
-
   prerequisite<-function(tmp2){
     prerequisite_result<-c(tmp2$level, tmp2$table, tmp2$field, tmp2$level, tmp2$table, tmp2$ref_key,
                            tmp2$level, tmp2$ref_table, tmp2$ref_key, tmp2$level, tmp2$ref_table, tmp2$ref_field)
@@ -44,6 +39,9 @@ moa_accuracy<-function(){
 
     return(prerequisite_result)
   }
+
+  n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
+  clusterEvalQ(cl, { library(moadqproject); con <- connect_DB(); NULL })
 
   iterations<-nrow(accuracy_rule); pb <- txtProgressBar(max = iterations, style = 3)
   progress <- function(n) setTxtProgressBar(pb, n); opts <- list(progress = progress)
