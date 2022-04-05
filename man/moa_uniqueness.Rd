@@ -4,7 +4,7 @@
 \alias{moa_uniqueness}
 \title{moa_uniqueness function}
 \usage{
-moa_uniqueness(con)
+moa_uniqueness()
 }
 \value{
 csv file

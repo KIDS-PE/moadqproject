@@ -4,7 +4,7 @@
 \alias{moa_tablerowindex}
 \title{moa_tablerowindex function}
 \usage{
-moa_tablerowindex(con)
+moa_tablerowindex()
 }
 \value{
 rds file

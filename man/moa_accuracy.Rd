@@ -4,7 +4,7 @@
 \alias{moa_accuracy}
 \title{moa_accuracy function}
 \usage{
-moa_accuracy(con)
+moa_accuracy()
 }
 \value{
 csv file

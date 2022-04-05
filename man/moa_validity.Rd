@@ -4,7 +4,7 @@
 \alias{moa_validity}
 \title{moa_validity function}
 \usage{
-moa_validity(con)
+moa_validity()
 }
 \value{
 csv file
