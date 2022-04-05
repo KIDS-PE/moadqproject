@@ -19,7 +19,7 @@
 moa_accuracy<-function(){
 
   con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
-
+  table_count<-readRDS(file.path(system.file(package="moadqproject"), 'results/table_count.rds'))
   mydbtype=tolower(con_info$dbtype)
   myschemaname_lv1=con_info$schemaname_lv1
   myschemaname_lv2=con_info$schemaname_lv2

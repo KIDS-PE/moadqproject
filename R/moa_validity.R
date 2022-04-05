@@ -9,7 +9,7 @@
 #' @import SqlRender
 #' @import tcltk
 #' @import foreach
-#' @import DoParallel
+#' @import doParallel
 #' @import parallel
 #' @import doSNOW
 #' @export
