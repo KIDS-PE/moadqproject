@@ -6,9 +6,12 @@
 #' @return csv file
 #' @import DBI
 #' @import dplyr
-#' @import RPostgreSQL
 #' @import SqlRender
 #' @import tcltk
+#' @import foreach
+#' @import DoParallel
+#' @import parallel
+#' @import doSNOW
 #' @export
 #' @examples
 #' moa_validity(x)
@@ -24,55 +27,53 @@ moa_validity<-function(){
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
 
-  n_core<-detectCores()
-  cl=makeCluster(n_core-1)
-  registerDoParallel(cl)
+  n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
 
-  clusterEvalQ(cl, {
-    library(moadqproject)
-    con <- connect_DB()
-    NULL
-  })
+  sql1<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
+  sql2<-translate('select distinct concept_id from @B.concept where @D', targetDialect = mydbtype)
 
-sql1<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
-sql2<-translate('select distinct concept_id from @B.concept where @D', targetDialect = mydbtype)
+  clusterEvalQ(cl, { library(moadqproject); con <- connect_DB(); NULL })
+  clusterExport(cl, c('validity_rule', 'sql1', 'sql2', 'myschemaname_lv1', 'myschemaname_lv2'))
 
-validity_result<-
-  foreach(i=validity_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI'), .noexport="con")%dopar%{
-    tmp1<-which(validity_rule$rule_id==i); tmp2<-validity_rule[tmp1,]
-    if(is_consistent(tmp2)[[1]]==TRUE){
-      if(tmp2$rule=='vocab validity'){
-        if(tmp2$level==1){
-          tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv1, C=tmp2$table))
-          tmp4<-unlist(strsplit(tmp2$ref, split = '\\|'))
-          tmp5<-tmp3$A%in%tmp4==FALSE
-          result<-round((sum(tmp5)/length(tmp5))*100, 0)
-        }
-        if(tmp2$level==2){
-          tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv2, C=tmp2$table))
-          tmp4<-dbGetQuery(con, render(sql2, B=myvocabschemaname, D=tmp2$ref))
-          tmp5<-tmp3$A%in%tmp4$concept_id==FALSE
-          result<-round((sum(tmp5)/length(tmp5))*100, 0)
-        }
-      }} else{result<-NA}
+  iterations<-nrow(validity_rule); pb <- txtProgressBar(max = iterations, style = 3)
+  progress <- function(n) setTxtProgressBar(pb, n); opts <- list(progress = progress)
 
-    cbind(tmp2, result)
-  }
+  validity_result<-
+    foreach(i=validity_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'moadqproject'), .noexport="con", .options.snow = opts)%dopar%{
+      tmp1<-which(validity_rule$rule_id==i); tmp2<-validity_rule[tmp1,]
+      if(is_consistent(tmp2)[[1]]==TRUE){
+        if(tmp2$rule=='vocab validity'){
+          if(tmp2$level==1){
+            tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv1, C=tmp2$table))
+            tmp4<-unlist(strsplit(tmp2$ref, split = '\\|'))
+            tmp5<-tmp3$A%in%tmp4==FALSE
+            result<-round((sum(tmp5)/length(tmp5))*100, 0)
+          }
+          if(tmp2$level==2){
+            tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv2, C=tmp2$table))
+            tmp4<-dbGetQuery(con, render(sql2, B=myvocabschemaname, D=tmp2$ref))
+            tmp5<-tmp3$A%in%tmp4$concept_id==FALSE
+            result<-round((sum(tmp5)/length(tmp5))*100, 0)
+          }
+        }} else{result<-NA}
 
-saveRDS(validity_result, file.path(system.file(package="moadqproject"), 'results/validity.rds'))
+      cbind(tmp2, result)
+    }
+  close(pb)
 
-progress<-read.table(file.path(system.file(package='moadqproject'), 'results/progress.txt'), header=TRUE)
-progress$status[which(progress$rule=="Validity")]<-TRUE
-write.table(progress, file.path(system.file(package='moadqproject'), 'results/progress.txt'), row.names = FALSE)
+  clusterEvalQ(cl, {library(DatabaseConnector); disconnect(con); NULL})
 
-validity_result$pass<-validity_result$result==0
-validity_score<-aggregate(pass~level+table, validity_result, FUN=mean)
-names(validity_score)<-c('level', 'table', 'validity')
+  saveRDS(validity_result, file.path(system.file(package="moadqproject"), 'results/validity.rds'))
 
-saveRDS(validity_score, file.path(system.file(package='moadqproject'), 'results/validity_score.rds'))
+  progress<-read.table(file.path(system.file(package='moadqproject'), 'results/progress.txt'), header=TRUE)
+  progress$status[which(progress$rule=="Validity")]<-TRUE
+  write.table(progress, file.path(system.file(package='moadqproject'), 'results/progress.txt'), row.names = FALSE)
 
-stopCluster(cl)
+  validity_result$pass<-validity_result$result==0
+  validity_score<-aggregate(pass~level+table, validity_result, FUN=mean)
+  names(validity_score)<-c('level', 'table', 'validity')
+  saveRDS(validity_score, file.path(system.file(package='moadqproject'), 'results/validity_score.rds'))
 
-
+  stopCluster(cl)
 
 }

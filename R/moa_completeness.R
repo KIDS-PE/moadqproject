@@ -7,9 +7,11 @@
 #' @import DBI
 #' @import dplyr
 #' @import SqlRender
+#' @import tcltk
 #' @import foreach
 #' @import doParallel
 #' @import parallel
+#' @import doSNOW
 #' @export
 #' @examples
 #' moa_completeness(x)
@@ -23,20 +25,20 @@ moa_completeness<-function(){
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
 
-  n_core<-detectCores()
-  cl=makeCluster(n_core-1)
-  registerDoParallel(cl)
-
-  clusterEvalQ(cl, {
-    library(moadqproject)
-    con <- connect_DB()
-    NULL
-  })
+  n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
 
   sql<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
 
+  clusterEvalQ(cl, {library(moadqproject); con <- connect_DB(); NULL})
+  clusterExport(cl, c('sql', 'completeness_rule', 'sql', 'myschemaname_lv1', 'myschemaname_lv2'))
+
+  iterations<-nrow(completeness_rule)
+  pb <- txtProgressBar(max = iterations, style = 3)
+  progress <- function(n) setTxtProgressBar(pb, n)
+  opts <- list(progress = progress)
+
 completeness_result <-
-  foreach(i=completeness_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI'), .noexport="con")%dopar%{
+  foreach(i=completeness_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'moadqproject'), .noexport="con", .options.snow = opts)%dopar%{
     tmp1<-which(completeness_rule$rule_id==i); tmp2<-completeness_rule[tmp1,]
     if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
     if(is_consistent(tmp2)[[1]]==TRUE){
@@ -50,6 +52,10 @@ completeness_result <-
 
   }
 
+close(pb)
+
+clusterEvalQ(cl, {library(DatabaseConnector); disconnect(con); NULL})
+
 saveRDS(completeness_result, file.path(system.file(package="moadqproject"), 'results/completeness.rds'))
 
 progress<-read.table(file.path(system.file(package='moadqproject'), 'results/progress.txt'), header=TRUE)
@@ -60,8 +66,7 @@ completeness_result$pass<-completeness_result$result==0
 
 completeness_score<-aggregate(pass~level+table, completeness_result, FUN=mean)
 names(completeness_score)<-c('level', 'table', 'completeness')
-
-saveRDS(completeness_score, file.path(system.file(package="moadqproject"), 'result/completeness_score.rds'))
+saveRDS(completeness_score, file.path(system.file(package="moadqproject"), 'results/completeness_score.rds'))
 
 stopCluster(cl)
 }

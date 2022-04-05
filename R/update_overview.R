@@ -10,11 +10,11 @@
 
 update_overview<-function(){
 
-  consistency_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/consistency.rds'))
-  completeness_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/completeness.rds'))
-  uniqueness_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/uniqueness.rds'))
-  validity_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/validity.rds'))
-  accuracy_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/accuracy.rds'))
+  consistency_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/consistency_score.rds'))
+  completeness_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/completeness_score.rds'))
+  uniqueness_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/uniqueness_score.rds'))
+  validity_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/validity_score.rds'))
+  accuracy_score<-readRDS(file.path(system.file(package="moadqproject"), 'results/accuracy_score.rds'))
 
   overview<-merge(consistency_score, completeness_score, by=c('level', 'table'), all.x=TRUE, all.y=TRUE)
   overview<-merge(overview, uniqueness_score, by=c('level', 'table'), all.x=TRUE, all.y=TRUE)
