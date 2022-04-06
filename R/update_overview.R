@@ -30,11 +30,11 @@ update_overview<-function(){
   saveRDS(overview, file.path(system.file(package="moadqproject"), 'results/overview.rds'))
 
   no_rules<-rbind(
-    aggregate(rule_id~level+table, consistency_result, length),
-    aggregate(rule_id~level+table, completeness_result, length),
-    aggregate(rule_id~level+table, uniqueness_result, length),
-    aggregate(rule_id~level+table, validity_result, length),
-    aggregate(rule_id~level+table, accuracy_result, length))
+    aggregate(rule_id~level+table, consistency_rule, length),
+    aggregate(rule_id~level+table, completeness_rule, length),
+    aggregate(rule_id~level+table, uniqueness_rule, length),
+    aggregate(rule_id~level+table, validity_rule, length),
+    aggregate(rule_id~level+table, accuracy_rule, length))
 
   no_rules<-aggregate(rule_id~level+table, no_rules, sum)
 
