@@ -26,7 +26,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
 
   tmp_sql<-(sql_list%>%filter(sql_id==plot_list$sql_id[ind] & level==schema))$sql
 
-  tmp_table<-dbGetQuery(con, render(tmp_sql, A=myschemaname, B=table, C=plot_list$C[ind], E=plot_list$E[ind]))
+  tmp_table<-dbGetQuery(con, render(tmp_sql, A=myschemaname, B=input_table, C=plot_list$C[ind], E=plot_list$E[ind]))
 
   if(plot_list$plot_id[ind]==1){
     table_lv2<-aggregate(Count~1+Gender, tmp_table, sum)%>%mutate(Prop=round(prop.table(Count)*100, 1))
