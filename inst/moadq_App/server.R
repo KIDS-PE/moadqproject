@@ -155,8 +155,8 @@ shinyServer(function(input, output, session) {
   output$lv2_plot<-NULL
 
   observeEvent(input$run_lv2, {
-   lv2_res<-moa_lv2(schema=input$tabset2, table=input$select_table, contents=input$select_table,
-                    group=input$select_group, concept_id=input$concept_id)
+   lv2_res<-moa_lv2(schema=input$tabset2, input_table=input$select_table, input_contents=input$select_table,
+                    input_group=input$select_group, concept_id=input$concept_id)
    output$lv2_table<-DT::renderDataTable(lv2_res$table_lv2)
    output$lv2_plot<-renderPlotly(lv2_res$plot_lv2)
   })

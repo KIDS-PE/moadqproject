@@ -14,13 +14,13 @@
 #' @examples
 #' moa_lv2(schema, table, contents, group, concept_id)
 
-moa_lv2<-function(schema=NULL, table=NULL, contents=NULL, group=NULL, concept_id=NULL){
+moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_group=NULL, concept_id=NULL){
 
   con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
   mydbtype=tolower(con_info$dbtype)
   if(schema=='SCDM'){myschemaname=con_info$schemaname_lv1} else{myschemaname=con_info$schemaname_lv2}
 
-  ind<-(plot_list%>%filter(table==table & contents==contents & group==group))$plot_id
+  ind<-(plot_list%>%filter(table==input_table & table_name==input_contents & group==input_group))$plot_id
   sql<-translate('plot_list$sql[ind]', targetDialect = mydbtype)
   con<-connect_DB()
 

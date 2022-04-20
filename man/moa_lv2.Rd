@@ -6,9 +6,9 @@
 \usage{
 moa_lv2(
   schema = NULL,
-  table = NULL,
-  contents = NULL,
-  group = NULL,
+  input_table = NULL,
+  input_contents = NULL,
+  input_group = NULL,
   concept_id = NULL
 )
 }
