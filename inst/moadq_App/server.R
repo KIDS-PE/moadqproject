@@ -60,7 +60,9 @@ shinyServer(function(input, output, session) {
     output$box15<-renderUI({box(id="box15", title=NULL, width=2, align="center", "Accuracy", headerBorder = FALSE, background = progress$col[which(progress$step=='1-5')])})
     output$box21<-renderUI({box(id="box21", title=NULL, width=2, align="center", "Distribution", headerBorder = FALSE, background = progress$col[which(progress$step=='2-1')])})
 
+    if(file.exists(file.path(system.file(package="moadqproject"), 'results/overview.rds'))==TRUE){
     overview<-readRDS(file.path(system.file(package="moadqproject"), 'results/overview.rds'))
+    } else{ overview<-data.frame(list('consistency'=0, 'uniqueness'=0, 'completeness'=0, 'validity'=0, 'accuracy'=0, 'total'=0))}
 
       output$overview<-renderFormattable({
         formattable(overview, list(
@@ -149,10 +151,15 @@ shinyServer(function(input, output, session) {
     })
   })})
 
-  lv2_table<-readRDS(file.path(system.file(package='moadqproject'), 'results/lv2/table/1/1.RDS'))
-  output$lv2_table<-DT::renderDataTable(lv2_table)
-  lv2_plot<-ggplotly(readRDS(file.path(system.file(package='moadqproject'), 'results/lv2/plot/1/1.RDS')))
-  output$lv2_plot<-renderPlotly(lv2_plot)
+  output$lv2_table<-NULL
+  output$lv2_plot<-NULL
+
+  observeEvent(input$run_lv2, {
+   lv2_res<-moa_lv2(schema=input$tabset2, table=input$select_table, contents=input$select_table,
+                    group=input$select_group, concept_id=input$concept_id)
+   output$lv2_table<-DT::renderDataTable(lv2_res$table_lv2)
+   output$lv2_plot<-renderPlotly(lv2_res$plot_lv2)
+  })
 
 
 
