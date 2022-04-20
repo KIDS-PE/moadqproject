@@ -34,6 +34,7 @@ ui.configuration<-{tabItem(tabName = 'Configuration',
                                       div(style="display:inline-block", actionButton("save", "SAVE")),
                                       div(style="display:inline-block", actionButton("del", "Delete Info")))
                            ))}
+
 ui.dashboard<-{tabItem(tabName = 'Dashboard', class = "active", shinyUI(fluidPage(
   fluidRow(
       column(width=3, shinydashboard::valueBox("MOA CDM", "Data Quality Check", icon=icon("thumbs-up", lib="glyphicon"), color="light-blue", width=12)),
@@ -118,13 +119,28 @@ ui.lv2<-{tabItem(tabName="Level2", shinyUI(fluidPage(
     column(width=3,
            tabBox(title=NULL, width=NULL, id="tabset2",
                   tabPanel("SCDM", div(style = 'overflow-y:scroll;height:212px;',
-                                       prettyRadioButtons(inputId = "scdm_table", label = "Choose:", icon = icon("check"), bigger = TRUE, status = "info", animation = "jelly",
-                                                          choices = c("Demographic", "Enrollment", "Dispensing", "Encounter", "Diagnosis", "Procedure", "Laboratory_result", "Vital_signs")))),
+                                       prettyRadioButtons(inputId = "scdm_table_lv2", label = "Choose:", icon = icon("check"),
+                                                          bigger = TRUE, status = "info", animation = "jelly",
+                                                          choices = c("Demographic", "Enrollment", "Dispensing", "Encounter",
+                                                                      "Diagnosis", "Procedure", "Laboratory_result", "Vital_signs")))),
                   tabPanel("OMOP", div(style = 'overflow-y:scroll;height:212px;',
-                                       prettyRadioButtons(inputId = "omop_table", label = "Choose:", icon = icon("check"), bigger = TRUE, status = "info", animation = "jelly",
-                                                          choices = c("person", "observation_period", "drug_exposure", "visit_occurrence", "condition_occurrence", "procedure_occurrence", "measurement"))))
-           ))),
-  fluidRow(plotOutput('plot_show', width="100%"))
+                                       prettyRadioButtons(inputId = "omop_table_lv2", label = "Choose:", icon = icon("check"),
+                                                          bigger = TRUE, status = "info", animation = "jelly",
+                                                          choices = c("person", "observation_period", "drug_exposure", "visit_occurrence",
+                                                                      "condition_occurrence", "procedure_occurrence", "measurement"))))
+           )),
+    column(width=3, uiOutput('choose_table')),
+    column(width=2, uiOutput('choose_group')),
+    column(width=2, conditionalPanel(condition="input.select_table=='Number of patients, per concept_id'",
+                                     textInput("concept_id", "concept_id", value="Enter concept_id"))),
+    column(width=2, style = "margin-top: 220px; display: inline-block; text-align: right",
+           actionBttn(inputId = "run_lv2", label = "Show figures", style = "fill", color = "danger"))
+    ),
+
+  fluidRow(box(title='Result', width=12,column(width=12,
+                                               column(width=4, DT::dataTableOutput("lv2_table")),
+                                               column(width=8, class="well", plotlyOutput("lv2_plot", height=400)))))
+
 )))}
 
 shinyUI(dashboardPage(dashboardHeader(title="MOA CDM DQM"), dashboardSidebar(ui.sidebar),

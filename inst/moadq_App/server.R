@@ -64,17 +64,17 @@ shinyServer(function(input, output, session) {
 
       output$overview<-renderFormattable({
         formattable(overview, list(
-          consistency=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
-          uniqueness=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
-          completeness=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
-          validity=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
-          accuracy=formatter("span", style=x~ifelse(x<80, style(color="red", font.weight="bold"), NA)),
+          consistency=formatter("span", style=x~ifelse(x<80, formattable::style(color="red", font.weight="bold"), NA)),
+          uniqueness=formatter("span", style=x~ifelse(x<80, formattable::style(color="red", font.weight="bold"), NA)),
+          completeness=formatter("span", style=x~ifelse(x<80, formattable::style(color="red", font.weight="bold"), NA)),
+          validity=formatter("span", style=x~ifelse(x<80, formattable::style(color="red", font.weight="bold"), NA)),
+          accuracy=formatter("span", style=x~ifelse(x<80, formattable::style(color="red", font.weight="bold"), NA)),
           total=color_tile("lightcoral", "lightgreen"))
         )})
   }
 
   #### level 1 page
-
+  {
   no_rules<-readRDS(file.path(system.file(package="moadqproject"), 'results/no_rules.rds'))
   table_count<-readRDS(file.path(system.file(package="moadqproject"), 'results/table_count.rds'))
 
@@ -120,9 +120,41 @@ shinyServer(function(input, output, session) {
 
   })
 
+  }
+
   #### level 2 page
-  #plot_show<-readRDS('data/result/plot/plot1.rds')
-  #output$plot_show<-renderPlot(plot_show)
+  observeEvent(input$tabset2, {observeEvent(list(input$scdm_table_lv2, input$omop_table_lv2), {
+    if(input$tabset2=='SCDM'){
+      choose_table_list<-(plot_list%>%filter(table==input$scdm_table_lv2)%>%select(table_name)%>%unique())$table_name
+      output$choose_table<-renderUI({
+        selectInput("select_table", "Contents",choose_table_list, multiple = TRUE, selectize = FALSE, size=13, width='100%')})
+    } else{
+      choose_table_list<-(plot_list%>%filter(table==input$omop_table_lv2)%>%select(table_name)%>%unique())$table_name
+      output$choose_table<-renderUI({
+        selectInput("select_table", "Contents",choose_table_list, multiple = TRUE, selectize = FALSE, size=13, width='100%')})
+    }
+  })})
+
+  observeEvent(input$tabset2, {observeEvent(list(input$scdm_table_lv2, input$omop_table_lv2), {
+    observeEvent(input$select_table, {
+      if(input$tabset2=='SCDM'){
+        choose_group_list<-(plot_list%>%filter(table_name==input$select_table)%>%select(group)%>%unique())$group
+        output$choose_group<-renderUI({
+          selectInput("select_group", "Group",choose_group_list, multiple = TRUE, selectize = FALSE, size=13)})
+      } else{
+        choose_group_list<-(plot_list%>%filter(table_name==input$select_table)%>%select(group)%>%unique())$group
+        output$choose_group<-renderUI({
+          selectInput("select_group", "Group",choose_group_list, multiple = TRUE, selectize = FALSE, size=13)})
+      }
+    })
+  })})
+
+  lv2_table<-readRDS(file.path(system.file(package='moadqproject'), 'results/lv2/table/1/1.RDS'))
+  output$lv2_table<-DT::renderDataTable(lv2_table)
+  lv2_plot<-ggplotly(readRDS(file.path(system.file(package='moadqproject'), 'results/lv2/plot/1/1.RDS')))
+  output$lv2_plot<-renderPlotly(lv2_plot)
+
+
 
   ### configuration page
   {

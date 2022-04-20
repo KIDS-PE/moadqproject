@@ -12,6 +12,7 @@
 #' @import doParallel
 #' @import parallel
 #' @import doSNOW
+#' @import itertools
 #' @export
 #' @examples
 #' moa_completeness(x)
