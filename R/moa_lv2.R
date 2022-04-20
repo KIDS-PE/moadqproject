@@ -24,7 +24,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
   sql<-translate('plot_list$sql[ind]', targetDialect = mydbtype)
   con<-connect_DB()
 
-  tmp_sql<-(sql_list%>%filter(sql_id==plot_list$sql_id[ind]))$sql
+  tmp_sql<-(sql_list%>%filter(sql_id==plot_list$sql_id[ind] & level==schema))$sql
 
   tmp_table<-dbGetQuery(con, render(tmp_sql, A=myschemaname, B=table, C=plot_list$C[ind], E=plot_list$E[ind]))
 
