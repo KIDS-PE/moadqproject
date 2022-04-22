@@ -193,5 +193,6 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
   }
 
   disconnect(con)
-  saveRDS(list(table_lv2, plot_lv2), file.path(system.file(package="moadqproject"), 'results/lv2.rds'))
+
+  return(list(table_lv2, plot_lv2))
 }
