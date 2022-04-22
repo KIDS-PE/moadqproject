@@ -131,7 +131,7 @@ ui.lv2<-{tabItem(tabName="Level2", shinyUI(fluidPage(
            )),
     column(width=3, uiOutput('choose_table')),
     column(width=2, uiOutput('choose_group')),
-    column(width=2, conditionalPanel(condition="input.select_table=='Number of patients, per concept_id'",
+    column(width=2, conditionalPanel(condition="input.select_contents=='Number of patients, per concept_id'",
                                      textInput("concept_id", "concept_id", value="Enter concept_id"))),
     column(width=2, style = "margin-top: 220px; display: inline-block; text-align: right",
            actionBttn(inputId = "run_lv2", label = "Show figures", style = "fill", color = "danger"))
