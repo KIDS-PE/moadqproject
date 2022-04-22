@@ -194,5 +194,5 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
 
   disconnect(con)
 
-  return(list(table_lv2, plot_lv2))
+  return(list('table_lv2'=table_lv2, 'plot_lv2'=plot_lv2))
 }
