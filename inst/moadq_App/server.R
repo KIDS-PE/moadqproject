@@ -158,12 +158,12 @@ shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$run_lv2, {
+    if(input$tabset2=='SCDM'){input_table<-input$scdm_table_lv2} else{input_table<-input$omop_table_lv2}
     lv2_res<-moa_lv2(schema=input$tabset2, input_table=input_table, input_contents=input$select_contents,
                      input_group=input$select_group, concept_id=input$concept_id)
     output$lv2_table<-DT::renderDataTable(lv2_res$table_lv2)
     output$lv2_plot<-renderPlotly(lv2_res$plot_lv2)
   })
-
 
   ### configuration page
   {
