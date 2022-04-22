@@ -142,28 +142,28 @@ shinyServer(function(input, output, session) {
         selectInput("select_contents", "Contents",choose_table_list, multiple = TRUE, selectize = FALSE, size=13, width='100%')})
     }
 
-    observeEvent(input$select_contents, {
-      if(input$tabset2=='SCDM'){
-        choose_group_list<-(plot_list%>%filter(table_name==input$select_contents)%>%select(group)%>%unique())$group
-        output$choose_group<-renderUI({
-          selectInput("select_group", "Group",choose_group_list, multiple = TRUE, selectize = FALSE, size=13)})
-      } else{
-        choose_group_list<-(plot_list%>%filter(table_name==input$select_contents)%>%select(group)%>%unique())$group
-        output$choose_group<-renderUI({
-          selectInput("select_group", "Group",choose_group_list, multiple = TRUE, selectize = FALSE, size=13)})
-      }
-
-      observeEvent(input$run_lv2, {
-        lv2_res<-moa_lv2(schema=input$tabset2, input_table=input_table, input_contents=input$select_contents,
-                         input_group=input$select_group, concept_id=input$concept_id)
-        output$lv2_table<-DT::renderDataTable(lv2_res$table_lv2)
-        output$lv2_plot<-renderPlotly(lv2_res$plot_lv2)
-      })
-
-    })
-
-
   })})
+
+  observeEvent(input$select_contents, {
+    if(input$tabset2=='SCDM'){
+      choose_group_list<-(plot_list%>%filter(table_name==input$select_contents)%>%select(group)%>%unique())$group
+      output$choose_group<-renderUI({
+        selectInput("select_group", "Group",choose_group_list, multiple = TRUE, selectize = FALSE, size=13)})
+    } else{
+      choose_group_list<-(plot_list%>%filter(table_name==input$select_contents)%>%select(group)%>%unique())$group
+      output$choose_group<-renderUI({
+        selectInput("select_group", "Group",choose_group_list, multiple = TRUE, selectize = FALSE, size=13)})
+    }
+
+  })
+
+  observeEvent(input$run_lv2, {
+    lv2_res<-moa_lv2(schema=input$tabset2, input_table=input_table, input_contents=input$select_contents,
+                     input_group=input$select_group, concept_id=input$concept_id)
+    output$lv2_table<-DT::renderDataTable(lv2_res$table_lv2)
+    output$lv2_plot<-renderPlotly(lv2_res$plot_lv2)
+  })
+
 
   ### configuration page
   {
