@@ -125,6 +125,10 @@ shinyServer(function(input, output, session) {
   }
 
   #### level 2 page
+
+  output$lv2_table<-NULL
+  output$lv2_plot<-NULL
+
   observeEvent(input$tabset2, {observeEvent(list(input$scdm_table_lv2, input$omop_table_lv2), {
     if(input$tabset2=='SCDM'){
       input_table<-input$scdm_table_lv2
@@ -137,9 +141,7 @@ shinyServer(function(input, output, session) {
       output$choose_table<-renderUI({
         selectInput("select_contents", "Contents",choose_table_list, multiple = TRUE, selectize = FALSE, size=13, width='100%')})
     }
-  })})
 
-  observeEvent(input$tabset2, {observeEvent(list(input$scdm_table_lv2, input$omop_table_lv2), {
     observeEvent(input$select_contents, {
       if(input$tabset2=='SCDM'){
         choose_group_list<-(plot_list%>%filter(table_name==input$select_contents)%>%select(group)%>%unique())$group
@@ -150,20 +152,18 @@ shinyServer(function(input, output, session) {
         output$choose_group<-renderUI({
           selectInput("select_group", "Group",choose_group_list, multiple = TRUE, selectize = FALSE, size=13)})
       }
+
+      observeEvent(input$run_lv2, {
+        lv2_res<-moa_lv2(schema=input$tabset2, input_table=input_table, input_contents=input$select_contents,
+                         input_group=input$select_group, concept_id=input$concept_id)
+        output$lv2_table<-DT::renderDataTable(lv2_res$table_lv2)
+        output$lv2_plot<-renderPlotly(lv2_res$plot_lv2)
+      })
+
     })
+
+
   })})
-
-  output$lv2_table<-NULL
-  output$lv2_plot<-NULL
-
-  observeEvent(input$run_lv2, {
-   lv2_res<-moa_lv2(schema=input$tabset2, input_table=input_table, input_contents=input$select_contents,
-                    input_group=input$select_group, concept_id=input$concept_id)
-   output$lv2_table<-DT::renderDataTable(lv2_res$table_lv2)
-   output$lv2_plot<-renderPlotly(lv2_res$plot_lv2)
-  })
-
-
 
   ### configuration page
   {

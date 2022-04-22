@@ -24,7 +24,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
   sql<-translate((sql_list%>%filter(sql_id==plot_list$sql_id[ind] & level==schema))$sql, targetDialect = mydbtype)
   con<-connect_DB()
 
-  tmp_table<-trycatch({dbGetQuery(con, render(sql, A=myschemaname, B=input_table, C=plot_list$C[ind], E=plot_list$E[ind]))},
+  tmp_table<-tryCatch({dbGetQuery(con, render(sql, A=myschemaname, B=input_table, C=plot_list$C[ind], E=plot_list$E[ind]))},
                       error=function(e){showNotification(paste0(e[1]), type='err')})
 
   if(plot_list$plot_id[ind]==1){
