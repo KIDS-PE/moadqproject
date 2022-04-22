@@ -186,7 +186,7 @@ shinyServer(function(input, output, session) {
     observeEvent(input$save, {
       con_info<-list('site'=input$site, 'dbname'=input$dbname, 'dbtype'=input$dbtype,
                      'schemaname_lv1'=input$schemaname_lv1, 'schemaname_lv2'=input$schemaname_lv2, 'schemaname_vocab'=input$schemaname_vocab,
-                     'host'=input$host, 'port'=input$port, 'user'=input$username, 'password'=input$password)
+                     'host'=input$host, 'port'=input$port, 'user'=input$username, 'password'=input$password, 'jdbcDrivers'=input$jdbcDrivers)
       saveRDS(con_info, file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
       showNotification("Saved information", type="message")
     })
