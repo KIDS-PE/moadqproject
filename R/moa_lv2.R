@@ -21,12 +21,10 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
   if(schema=='SCDM'){myschemaname=con_info$schemaname_lv1} else{myschemaname=con_info$schemaname_lv2}
 
   ind<-(plot_list%>%filter(table==input_table & table_name==input_contents & group==input_group))$plot_id
-  sql<-translate('plot_list$sql[ind]', targetDialect = mydbtype)
+  sql<-translate((sql_list%>%filter(sql_id==plot_list$sql_id[ind] & level==schema))$sql, targetDialect = mydbtype)
   con<-connect_DB()
 
-  tmp_sql<-(sql_list%>%filter(sql_id==plot_list$sql_id[ind] & level==schema))$sql
-
-  tmp_table<-dbGetQuery(con, render(tmp_sql, A=myschemaname, B=input_table, C=plot_list$C[ind], E=plot_list$E[ind]))
+  tmp_table<-dbGetQuery(con, render(sql, A=myschemaname, B=input_table, C=plot_list$C[ind], E=plot_list$E[ind]))
 
   if(plot_list$plot_id[ind]==1){
     table_lv2<-aggregate(Count~1+Gender, tmp_table, sum)%>%mutate(Prop=round(prop.table(Count)*100, 1))
