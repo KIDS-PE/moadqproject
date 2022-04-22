@@ -77,7 +77,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
   }
 
   if(plot_list$plot_id[ind]==7){
-    table_lv2<-aggregate(Id~1+Visit_type+Visit_length, tmp_table, length); names(table2)[3]<-'Count'
+    table_lv2<-aggregate(Id~1+Visit_type+Visit_length, tmp_table, length); names(table_lv2)[3]<-'Count'
     table_lv2<-table_lv2%>%mutate('Visit_length_bin'=cut(Visit_length, breaks = c(0,7,30, 90, 180, Inf),
                                                    label=c('[0, 7)', '[7, 30)', '[30, 90)', '[90, 180)', '[180+)'), right=FALSE))
     plot_lv2<-table_lv2%>%ggplot(aes(x=Visit_length_bin, y=Count, group=1))+ geom_bar(stat = 'identity')+
