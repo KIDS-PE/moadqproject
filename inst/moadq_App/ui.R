@@ -138,8 +138,8 @@ ui.lv2<-{tabItem(tabName="Level2", shinyUI(fluidPage(
     ),
 
   fluidRow(box(title='Result', width=12,column(width=12,
-                                               column(width=4, DT::dataTableOutput("lv2_table")),
-                                               column(width=8, class="well", plotlyOutput("lv2_plot", height=400)))))
+                                               column(width=5, DT::dataTableOutput("lv2_table")),
+                                               column(width=7, class="well", plotlyOutput("lv2_plot", height=400)))))
 
 )))}
 

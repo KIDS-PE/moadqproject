@@ -69,6 +69,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
   if(plot_list$plot_id[ind]==6){
     table_lv2<-as.data.frame(as.matrix(aggregate(Count~1+Visit_year+Visit_type, tmp_table, summary)))
     names(table_lv2)<-c('Visit_year', 'Visit_type', 'Min', "25%", "50%", "Mean", "75%", "Max")
+    table_lv2[,-c(1:2)]<-round(table_lv2[,-c(1,2)])
 
     plot_lv2<-tmp_table%>%ggplot(aes(x=Count))+
       geom_histogram(position = 'identity', binwidth = 5) +
@@ -182,6 +183,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
 
   if(plot_list$plot_id[ind]%in%c(17:20)){
     table_lv2<-aggregate(Count~1, tmp_table, summary)
+    table_lv2[,-c(1)]<-round(table_lv2[,-c(1)])
     plot_lv2<-tmp_table%>%ggplot(aes(x=Count))+geom_histogram(position = 'identity', binwidth = 5) +
                           scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
                           scale_x_continuous(name='Number of concepts, per person')
