@@ -14,31 +14,32 @@
 #' @examples
 #' moa_lv2(schema, table, contents, group, concept_id)
 
-moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_group=NULL, concept_id=NULL){
+moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, input_group=NULL, concept_id=NULL){
 
   con_info<-readRDS(file.path(system.file(package="moadqproject"), 'results/con_info.rds'))
   mydbtype=tolower(con_info$dbtype)
-  if(schema=='SCDM'){myschemaname=con_info$schemaname_lv1} else{myschemaname=con_info$schemaname_lv2}
+  if(input_schema=='SCDM'){myschemaname=con_info$schemaname_lv1} else{myschemaname=con_info$schemaname_lv2}
 
-  ind<-(plot_list%>%filter(table==input_table & table_name==input_contents & group==input_group))$plot_id
-  sql<-translate((sql_list%>%filter(sql_id==plot_list$sql_id[ind] & level==schema))$sql, targetDialect = mydbtype)
+  s<-plot_list%>%filter(schema==input_schema & table==input_table & table_name==input_contents & group==input_group)
+  plot_id_s<-s$plot_id; sql_id_s<-s$sql_id
+  sql<-translate((sql_list%>%filter(sql_id==sql_id_s & level==input_schema))$sql, targetDialect = mydbtype)
   con<-connect_DB()
 
-  tmp_table<-tryCatch({dbGetQuery(con, render(sql, A=myschemaname, B=input_table, C=plot_list$C[ind], E=plot_list$E[ind]))},
+  tmp_table<-tryCatch({dbGetQuery(con, render(sql, A=myschemaname, B=input_table, C=s$C, D=concept_id, E=s$E))},
                       error=function(e){showNotification(paste0(e[1]), type='err')})
 
-  if(plot_list$plot_id[ind]==1){
+  if(plot_id_s==1){
     table_lv2<-aggregate(Count~1+Gender, tmp_table, sum)%>%mutate(Prop=round(prop.table(Count)*100, 1))
     plot_lv2<-ggplot(table_lv2) + geom_bar(aes(x=factor(Gender), y=Count, fill=factor(Gender)), stat="identity") +
               scale_fill_discrete(name = "Gender")+scale_x_discrete(name='Gender')
   }
 
-  if(plot_list$plot_id[ind]==2){
+  if(plot_id_s==2){
     table_lv2<-aggregate(Count~1+Birth_year, tmp_table, sum)%>%mutate(Prop=round(prop.table(Count)*100, 1))
     plot_lv2<-ggplot(table_lv2) + geom_line(aes(x=Birth_year, y=Count), stat="identity")
   }
 
-  if(plot_list$plot_id[ind]==3){
+  if(plot_id_s==3){
     tmp_table<-tmp_table%>%mutate('Visit_date'=as.Date(paste0(Visit_year, '-', Visit_month, '-', '1')))
     table_lv2<-aggregate(Count~1+Visit_date, tmp_table, sum)
     plot_lv2<-ggplot(table_lv2) +
@@ -47,7 +48,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
       theme(axis.text.x = element_text(angle=45, hjust=1))
   }
 
-  if(plot_list$plot_id[ind]==4){
+  if(plot_id_s==4){
     tmp_table<-tmp_table%>%mutate('Visit_date'=as.Date(paste0(Visit_year, '-', Visit_month, '-', '1')))
     table_lv2<-aggregate(Count~1+Visit_date+Gender, tmp_table, sum)
     plot_lv2<-ggplot(table_lv2) +
@@ -56,7 +57,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
       theme(axis.text.x = element_text(angle=45, hjust=1))
   }
 
-  if(plot_list$plot_id[ind]==5){
+  if(plot_id_s==5){
     tmp_table<-tmp_table%>%mutate('Visit_date'=as.Date(paste0(Visit_year, '-', Visit_month, '-', '1')))
     table_lv2<-aggregate(Count~1+Visit_date+Visit_type, tmp_table, sum)
     plot_lv2<-
@@ -66,7 +67,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
       theme(axis.text.x = element_text(angle=45, hjust=1))
   }
 
-  if(plot_list$plot_id[ind]==6){
+  if(plot_id_s==6){
     table_lv2<-as.data.frame(as.matrix(aggregate(Count~1+Visit_year+Visit_type, tmp_table, summary)))
     names(table_lv2)<-c('Visit_year', 'Visit_type', 'Min', "25%", "50%", "Mean", "75%", "Max")
     table_lv2[,-c(1:2)]<-round(table_lv2[,-c(1,2)])
@@ -76,7 +77,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
       scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+facet_grid(Visit_type~Visit_year)
   }
 
-  if(plot_list$plot_id[ind]==7){
+  if(plot_id_s==7){
     table_lv2<-aggregate(Id~1+Visit_type+Visit_length, tmp_table, length); names(table_lv2)[3]<-'Count'
     table_lv2<-table_lv2%>%mutate('Visit_length_bin'=cut(Visit_length, breaks = c(0,7,30, 90, 180, Inf),
                                                    label=c('[0, 7)', '[7, 30)', '[30, 90)', '[90, 180)', '[180+)'), right=FALSE))
@@ -84,7 +85,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
               scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+facet_wrap(~Visit_type)
   }
 
-  if(plot_list$plot_id[ind]==8){
+  if(plot_id_s==8){
     tmp_table<-tmp_table%>%mutate('Enr_date'=as.Date(paste0(Enr_year, '-', Enr_month, '-', '01')),'Age'=Enr_year-Birth_year+1)
     tmp_table<-tmp_table%>%mutate('Age_group'=cut(Age, breaks = c(seq(0, 90, by=10), Inf),
                                                   label=c('0~9', '10~19', '20~29', '30~39', '40~49',
@@ -94,7 +95,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
               scale_x_date(date_breaks = "3 months", date_labels = "%b %Y")+theme(axis.text.x = element_text(angle=45, hjust=1))
   }
 
-  if(plot_list$plot_id[ind]==9){
+  if(plot_id_s==9){
     tmp_table<-tmp_table%>%mutate('Enr_date'=as.Date(paste0(Enr_year, '-', Enr_month, '-', '01')),'Age'=Enr_year-Birth_year+1)
     tmp_table<-tmp_table%>%mutate('Age_group'=cut(Age, breaks = c(seq(0, 90, by=10), Inf),
                 label=c('0~9', '10~19', '20~29', '30~39', '40~49','50~59', '60~69', '70~79', '80~89', '90+'), right=FALSE))
@@ -104,7 +105,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
       scale_x_date(date_breaks = "3 months", date_labels = "%b %Y")+theme(axis.text.x = element_text(angle=45, hjust=1))
   }
 
-  if(plot_list$plot_id[ind]==10){
+  if(plot_id_s==10){
     tmp_table<-tmp_table%>%mutate('Enr_date'=as.Date(paste0(Enr_year, '-', Enr_month, '-', '01')),'Age'=Enr_year-Birth_year+1)
     tmp_table<-tmp_table%>%mutate('Age_group'=cut(Age, breaks = c(seq(0, 90, by=10), Inf),
                                                   label=c('0~9', '10~19', '20~29', '30~39', '40~49','50~59', '60~69', '70~79', '80~89', '90+'), right=FALSE))
@@ -116,7 +117,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
 
 
 
-  if(plot_list$plot_id[ind]==11){
+  if(plot_id_s==11){
     tmp_table<-tmp_table%>%mutate('Enr_date'=as.Date(paste0(Enr_year, '-', Enr_month, '-', '01')),'Age'=Enr_year-Birth_year+1)
     tmp_table<-tmp_table%>%mutate('Age_group'=cut(Age, breaks = c(seq(0, 90, by=10), Inf),
                  label=c('0~9', '10~19', '20~29', '30~39', '40~49','50~59', '60~69', '70~79', '80~89', '90+'), right=FALSE))
@@ -126,7 +127,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
            theme(axis.text.x = element_text(angle=45, hjust=1))
   }
 
-  if(plot_list$plot_id[ind]==12){
+  if(plot_id_s==12){
     tmp_table<-tmp_table%>%mutate('Enr_date'=as.Date(paste0(Enr_year, '-', Enr_month, '-', '01')),'Age'=Enr_year-Birth_year+1)
     tmp_table<-tmp_table%>%mutate('Age_group'=cut(Age, breaks = c(seq(0, 90, by=10), Inf),
                                                   label=c('0~9', '10~19', '20~29', '30~39', '40~49','50~59', '60~69', '70~79', '80~89', '90+'), right=FALSE))
@@ -137,7 +138,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
       theme(axis.text.x = element_text(angle=45, hjust=1))
   }
 
-  if(plot_list$plot_id[ind]==13){
+  if(plot_id_s==13){
     tmp_table<-tmp_table%>%mutate('Enr_date'=as.Date(paste0(Enr_year, '-', Enr_month, '-', '01')),'Age'=Enr_year-Birth_year+1)
     tmp_table<-tmp_table%>%mutate('Age_group'=cut(Age, breaks = c(seq(0, 90, by=10), Inf),
                                                   label=c('0~9', '10~19', '20~29', '30~39', '40~49','50~59', '60~69', '70~79', '80~89', '90+'), right=FALSE))
@@ -153,7 +154,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
 
 
 
-  if(plot_list$plot_id[ind]==14){
+  if(plot_id_s==14){
     tmp_table<-tmp_table%>%mutate('Observation_length_group'=cut(Observation_length,
                   breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365)),right=FALSE,  dig.lab = 5))
     table_lv2<-as.data.frame(tmp_table%>% group_by(Observation_length_group) %>%summarise(Count = n()))
@@ -161,7 +162,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
                                   scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
   }
 
-  if(plot_list$plot_id[ind]==15){
+  if(plot_id_s==15){
     tmp_table<-tmp_table%>%mutate('Observation_length_group'=cut(Observation_length,
                                                                  breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365)),right=FALSE,  dig.lab = 5))
     table_lv2<-as.data.frame(tmp_table%>% group_by(Gender, Observation_length_group) %>%summarise(Count = n()))
@@ -171,7 +172,7 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
                                  theme(axis.text.x = element_text(angle=45, hjust=1))+scale_fill_discrete(name = "Gender")
   }
 
-  if(plot_list$plot_id[ind]==16){
+  if(plot_id_s==16){
     tmp_table<-tmp_table%>%mutate('Observation_length_group'=cut(Observation_length,
                                                                  breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365)),right=FALSE,  dig.lab = 5))
     table_lv2<-as.data.frame(tmp_table%>% group_by(Birth_year, Observation_length_group) %>%summarise(Count = n()))
@@ -181,16 +182,16 @@ moa_lv2<-function(schema=NULL, input_table=NULL, input_contents=NULL, input_grou
                                  scale_fill_discrete(name = "Observation_length")
   }
 
-  if(plot_list$plot_id[ind]%in%c(17:20)){
-    table_lv2<-aggregate(Count~1, tmp_table, summary)
-    table_lv2[,-c(1)]<-round(table_lv2[,-c(1)])
+  if(plot_id_s%in%c(17:20)){
+    table_lv2<-(aggregate(Count~1, tmp_table, summary))$Count
+    table_lv2<-round(table_lv2)
     plot_lv2<-tmp_table%>%ggplot(aes(x=Count))+geom_histogram(position = 'identity', binwidth = 5) +
                           scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
                           scale_x_continuous(name='Number of concepts, per person')
   }
 
-  if(plot_list$plot_id[ind]>20){
-    table_lv2<-NULL
+  if(plot_id_s>20){
+    table_lv2<-as.data.frame(NULL)
     plot_lv2<-NULL
   }
 

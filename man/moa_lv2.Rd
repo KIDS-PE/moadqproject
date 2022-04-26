@@ -5,7 +5,7 @@
 \title{moa_lv2 function}
 \usage{
 moa_lv2(
-  schema = NULL,
+  input_schema = NULL,
   input_table = NULL,
   input_contents = NULL,
   input_group = NULL,
