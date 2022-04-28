@@ -27,6 +27,7 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
 
   tmp_table<-tryCatch({dbGetQuery(con, render(sql, A=myschemaname, B=input_table, C=s$C, D=concept_id, E=s$E))},
                       error=function(e){showNotification(paste0(e[1]), type='err')})
+
   if(nrow(tmp_table)==0){
     table_lv2<-as.data.frame(list('Result'=c('No result: 0 Count')))
     plot_lv2<-ggplot(table_lv2, aes(x=0, y=0, label='No result: 0 Count'))+geom_point(color='white')+theme_void()+geom_label()
@@ -125,8 +126,6 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
               scale_fill_discrete(name = "Age group")
   }
 
-
-
   if(plot_id_s==11){
     tmp_table<-tmp_table%>%mutate('Enr_date'=as.Date(paste0(Enr_year, '-', Enr_month, '-', '01')),'Age'=Enr_year-Birth_year+1)
     tmp_table<-tmp_table%>%mutate('Age_group'=cut(Age, breaks = c(seq(0, 90, by=10), Inf),
@@ -161,12 +160,9 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
       scale_fill_discrete(name = "Age group")
   }
 
-
-
-
   if(plot_id_s==14){
     tmp_table<-tmp_table%>%mutate('Observation_length_group'=cut(Observation_length,
-                  breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365)),right=FALSE,  dig.lab = 5))
+                  breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365), max(Observation_length)+1), right=FALSE,  dig.lab = 5))
     table_lv2<-as.data.frame(tmp_table%>% group_by(Observation_length_group) %>%summarise(Count = n()))
     plot_lv2<-table_lv2%>%ggplot(aes(x=Observation_length_group, y=Count))+ geom_bar(stat = 'identity') +
                                   scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
@@ -174,7 +170,7 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
 
   if(plot_id_s==15){
     tmp_table<-tmp_table%>%mutate('Observation_length_group'=cut(Observation_length,
-                                                                 breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365)),right=FALSE,  dig.lab = 5))
+                                                                 breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365), max(Observation_length)+1), right=FALSE,  dig.lab = 5))
     table_lv2<-as.data.frame(tmp_table%>% group_by(Gender, Observation_length_group) %>%summarise(Count = n()))
     plot_lv2<-table_lv2%>%ggplot(aes(x=Observation_length_group, y=Count, fill=factor(Gender)))+
                                  geom_bar(position = 'stack', stat='identity') +
@@ -184,7 +180,7 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
 
   if(plot_id_s==16){
     tmp_table<-tmp_table%>%mutate('Observation_length_group'=cut(Observation_length,
-                                                                 breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365)),right=FALSE,  dig.lab = 5))
+                                                                 breaks = c(0, 3, 7, 30, 180, seq(365, max(Observation_length)+1, by=365), max(Observation_length)+1), right=FALSE,  dig.lab = 5))
     table_lv2<-as.data.frame(tmp_table%>% group_by(Birth_year, Observation_length_group) %>%summarise(Count = n()))
     plot_lv2<-table_lv2%>%ggplot(aes(x=Birth_year, y=Count, fill=factor(Observation_length_group)))+
                                  geom_bar(position = 'stack', stat='identity') +
@@ -201,7 +197,7 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
   }
 
 
-  if(plot_id_s%in%c(21:24)){
+  if(plot_id_s%in%c(21:24, 33)){
     tmp_table<-tmp_table%>%mutate('Data_date'=as.Date(paste0(Data_year, '-', Data_month, '-', '01')))
     table_lv2<-aggregate(Count~Data_date, tmp_table, sum)
     plot_lv2<-table_lv2%>%ggplot(aes(x=Data_date, y=Count))+geom_line()+
@@ -209,7 +205,7 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
       theme(axis.text.x = element_text(angle=45, hjust=1))
   }
 
-  if(plot_id_s%in%c(25:28)){
+  if(plot_id_s%in%c(25:28, 34)){
     tmp_table<-tmp_table%>%mutate('Data_date'=as.Date(paste0(Data_year, '-', Data_month, '-', '01')))
     table_lv2<-aggregate(Count~Data_date+Gender, tmp_table, sum)
     plot_lv2<-ggplot(table_lv2)+geom_line(aes(x=Data_date, y=Count, group=factor(Gender), color=factor(Gender)))+
@@ -218,7 +214,7 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
       scale_color_discrete(name='Gender')
   }
 
-  if(plot_id_s%in%c(29:32)){
+  if(plot_id_s%in%c(29:32, 35)){
     tmp_table<-tmp_table%>%mutate('Data_date'=as.Date(paste0(Data_year, '-', Data_month, '-', '01')), 'Age'=Data_year-Byear+1)
     tmp_table<-tmp_table%>%mutate('Age_group'=cut(Age, breaks = c(seq(0, 90, by=10), Inf),
                                                   label=c('0~9', '10~19', '20~29', '30~39', '40~49','50~59', '60~69', '70~79', '80~89', '90+'), right=FALSE))
@@ -229,10 +225,11 @@ moa_lv2<-function(input_schema=NULL, input_table=NULL, input_contents=NULL, inpu
       scale_fill_discrete(name='Age group')
   }
 
-  if(plot_id_s>32){
-    table_lv2<-as.data.frame(NULL)
-    plot_lv2<-NULL
+  if(plot_id_s>35){
+      table_lv2<-as.data.frame(NULL)
+      plot_lv2<-NULL
   }
+
 
   }
 
