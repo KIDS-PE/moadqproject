@@ -10,42 +10,6 @@ shinyServer(function(input, output, session) {
       HTML(paste("Last check :", check_info$date,"<br> MOA DQM version", check_info$version))
     })
 
-    observeEvent(input$run, {
-        con<-tryCatch(connect_DB(), error=function(e){showNotification(paste0(e[1]), type='err')})
-        connection_status<-tryCatch(dbIsValid(con), error=function(e){showNotification(paste0('Connection information is invalid'), type='err')})
-        if(connection_status==TRUE){
-          moa_consistency()
-          moa_tablerowindex()
-          moa_completeness()
-          moa_uniqueness()
-          moa_validity()
-          moa_accuracy()
-          update_overview()
-
-          progress<-read.table(file.path(system.file(package="moadqproject"), 'results/progress.txt'))
-
-          progress$col<-'gray'
-          progress$col[which(progress$status==TRUE)]<-'teal'
-
-          output$box1<-renderUI({box(id="box1", title=NULL, width=10, align="center", "Level 1", headerBorder = FALSE, background = 'navy')})
-          output$box2<-renderUI({box(id="box2", title=NULL, width=2, align="center", "Level 2", headerBorder = FALSE, background = 'navy')})
-
-          output$box11<-renderUI({box(id="box11", title=NULL, width=2, align="center", "Consistency", headerBorder = FALSE, background = progress$col[which(progress$step=='1-1')])})
-          output$box12<-renderUI({box(id="box12", title=NULL, width=2, align="center", "Uniqueness", headerBorder = FALSE, background = progress$col[which(progress$step=='1-2')])})
-          output$box13<-renderUI({box(id="box13", title=NULL, width=2, align="center", "Completeness", headerBorder = FALSE, background = progress$col[which(progress$step=='1-3')])})
-          output$box14<-renderUI({box(id="box14", title=NULL, width=2, align="center", "Validity", headerBorder = FALSE, background = progress$col[which(progress$step=='1-4')])})
-          output$box15<-renderUI({box(id="box15", title=NULL, width=2, align="center", "Accuracy", headerBorder = FALSE, background = progress$col[which(progress$step=='1-5')])})
-          output$box21<-renderUI({box(id="box21", title=NULL, width=2, align="center", "Distribution", headerBorder = FALSE, background = progress$col[which(progress$step=='2-1')])})
-
-
-          output$version_info<-renderUI({
-            HTML(paste("Last check :", check_info$date,"<br> MOA DQM version", check_info$version))
-          })
-
-        } else{showNotification("No valid connection information. Please check connection and try again! (see Configuration Page)", type="warning")}
-
-    })
-
     progress<-read.table(file.path(system.file(package="moadqproject"), 'results/progress.txt'), header=TRUE)
     progress$col<-'gray'
     progress$col[which(progress$status==TRUE)]<-'teal'
@@ -73,6 +37,45 @@ shinyServer(function(input, output, session) {
           accuracy=formatter("span", style=x~ifelse(x<80, formattable::style(color="red", font.weight="bold"), NA)),
           total=color_tile("lightcoral", "lightgreen"))
         )})
+      observeEvent(input$run, {
+        con<-tryCatch(connect_DB(), error=function(e){showNotification(paste0(e[1]), type='err')})
+        connection_status<-tryCatch(dbIsValid(con), error=function(e){showNotification(paste0('Connection information is invalid'), type='err')})
+        if(connection_status==TRUE){
+          moa_consistency()
+          moa_tablerowindex()
+          moa_completeness()
+          moa_uniqueness()
+          moa_validity()
+          moa_accuracy()
+          update_overview()
+
+          progress<-read.table(file.path(system.file(package="moadqproject"), 'results/progress.txt'), header=TRUE)
+
+          progress$col<-'gray'
+          progress$col[which(progress$status==TRUE)]<-'teal'
+
+          output$box1<-renderUI({box(id="box1", title=NULL, width=10, align="center", "Level 1", headerBorder = FALSE, background = 'navy')})
+          output$box2<-renderUI({box(id="box2", title=NULL, width=2, align="center", "Level 2", headerBorder = FALSE, background = 'navy')})
+
+          output$box11<-renderUI({box(id="box11", title=NULL, width=2, align="center", "Consistency", headerBorder = FALSE, background = progress$col[which(progress$step=='1-1')])})
+          output$box12<-renderUI({box(id="box12", title=NULL, width=2, align="center", "Uniqueness", headerBorder = FALSE, background = progress$col[which(progress$step=='1-2')])})
+          output$box13<-renderUI({box(id="box13", title=NULL, width=2, align="center", "Completeness", headerBorder = FALSE, background = progress$col[which(progress$step=='1-3')])})
+          output$box14<-renderUI({box(id="box14", title=NULL, width=2, align="center", "Validity", headerBorder = FALSE, background = progress$col[which(progress$step=='1-4')])})
+          output$box15<-renderUI({box(id="box15", title=NULL, width=2, align="center", "Accuracy", headerBorder = FALSE, background = progress$col[which(progress$step=='1-5')])})
+          output$box21<-renderUI({box(id="box21", title=NULL, width=2, align="center", "Distribution", headerBorder = FALSE, background = progress$col[which(progress$step=='2-1')])})
+
+
+          output$version_info<-renderUI({
+            HTML(paste("Last check :", check_info$date,"<br> MOA DQM version", check_info$version))
+          })
+
+          showNotification("Level 1 check completed !", type="message")
+
+        } else{showNotification("No valid connection information. Please check connection and try again! (see Configuration Page)", type="warning")}
+
+      })
+
+
   }
 
   #### level 1 page
