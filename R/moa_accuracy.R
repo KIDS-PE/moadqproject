@@ -67,7 +67,7 @@ moa_accuracy<-function(){
         if(tmp2$rangeorder=='H'){tmp7<-sum(tmp6$field>tmp6$ref_field, na.rm=TRUE)}
         if(tmp2$rangeorder=='L'){tmp7<-sum(tmp6$field<tmp6$ref_field, na.rm=TRUE)}
 
-        if(is.na(tmp7)==TRUE){result<-NA} else{result<-round((tmp7/nrow(tmp6))*100, 0)}
+        if(is.na(tmp7)==TRUE||nrow(tmp6)==0){result<-NA} else{result<-round((tmp7/nrow(tmp6))*100, 0)}
       }
     }
 
@@ -89,7 +89,7 @@ moa_accuracy<-function(){
         if(tmp2$rangeorder=='L'){tmp5<-length(which(tmp4$age<tmp2$threashold)==TRUE)}
 
         count_rows=(table_count%>%filter(table==tmp2$table))$count
-        if(is.na(tmp5)==TRUE){result<-NA} else{result<-round((tmp5/count_rows)*100, 4)}
+        if(is.na(tmp5)==TRUE||nrow(tmp4)==0){result<-NA} else{result<-round((tmp5/count_rows)*100, 4)}
       }
     }
 
@@ -109,7 +109,7 @@ moa_accuracy<-function(){
         if(tmp2$threashold=='F'){tmp5<-sum(tmp4$ref_field==ref_male, na.rm=TRUE)}
 
         count_rows=(table_count%>%filter(table==tmp2$table))$count
-        if(is.na(tmp5)==TRUE){result<-NA} else{result<-round((tmp5/count_rows)*100, 4)}
+        if(is.na(tmp5)==TRUE||nrow(tmp4)==0){result<-NA} else{result<-round((tmp5/count_rows)*100, 4)}
       }
     }
 
@@ -127,7 +127,7 @@ moa_accuracy<-function(){
         if(tmp2$rangeorder=='L'){tmp5<-sum(tmp4$ref_field<tmp2$threashold, na.rm=TRUE)}
 
         count_rows=(table_count%>%filter(table==tmp2$table))$count
-        if(is.na(tmp5)==TRUE){result<-NA} else{result<-round((tmp5/count_rows)*100, 4)}
+        if(is.na(tmp5)==TRUE||nrow(tmp4)==0){result<-NA} else{result<-round((tmp5/count_rows)*100, 4)}
       }
     }
 
@@ -144,7 +144,7 @@ moa_accuracy<-function(){
         if(tmp2$rangeorder=='L'){tmp5<-sum(tmp4$field<tmp2$threashold, na.rm=TRUE)}
 
         count_rows=(table_count%>%filter(table==tmp2$table))$count
-        if(is.na(tmp5)==TRUE){result<-NA} else{result<-round((tmp5/count_rows)*100, 4)}
+        if(is.na(tmp5)==TRUE||nrow(tmp4)==0){result<-NA} else{result<-round((tmp5/count_rows)*100, 4)}
       }
 
     }

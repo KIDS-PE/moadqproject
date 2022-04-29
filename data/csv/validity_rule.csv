@@ -1,0 +1,54 @@
+rule_id,level,table,field,rule,ref,ref_detail
+40001,1,Demographic,Sex,vocab validity,A|F|M|U,NA
+40002,1,Demographic,Hispanic,vocab validity,N|U|Y,NA
+40003,1,Demographic,Race,vocab validity,0|1|2|3|4|5,NA
+40004,1,Encounter,EncType,vocab validity,AV|ED|IP|OA,NA
+40005,1,Encounter,Discharge_Disposition,vocab validity,A|E|U,NA
+40006,1,Encounter,Discharge_Status,vocab validity,AF|AL|AM|AW|EX|HH|HO|HS|IP|NH|OT|RH|RS|SH|SN|UN,NA
+40007,1,Encounter,Admitting_Source,vocab validity,AF|AL|AM|AW|EX|HH|HO|HS|IP|NH|OT|RH|RS|SH|SN|UN,NA
+40008,1,Diagnosis,EncType,vocab validity,AV|ED|IP|OA,NA
+40009,1,Diagnosis,DX_Codetype,vocab validity,9|10|11|SM|OT,NA
+40010,1,Diagnosis,PDX,vocab validity,P|S|X,NA
+40011,1,Procedure,EncType,vocab validity,AV|ED|IP|OA,NA
+40012,1,Procedure,PX_CodeType,vocab validity,OT,NA
+40013,1,Laboratory_Result,Result_Type,vocab validity,N|C,NA
+40014,1,Laboratory_Result,MS_Test_Name,vocab validity,ALP|ALT|ANC|BILI_TOT|CHOL_HDL|CHOL_LDL|CHOL_TOT|CK|CK_MB|CK_MBI|CREATININE|D_DIMER|CLUCOSE|HGB|HGBA1C|INF_A|INF_AB|INF_B|INF_NS|INR|LIPASE|PG|PLATELETS|SODIUM|TRIG|TROP_I|TROP_T|TSH,NA
+40015,1,Laboratory_Result,MS_Test_Sub_Category,vocab validity,BHCG|CLC|DDU|DIRECT|EIA|FEU|HCG|IF|NS|PCR|VTC,NA
+40016,1,Laboratory_Result,Fast_Ind,vocab validity,F|R|X,NA
+40017,1,Laboratory_Result,Specimen_Source,vocab validity,BAL|BALBX|BLOOD|CSF|NPH|NPWASH|NSWAB|NWASH|OTHER|PLASMA|PPP|SERUM|SPUTUM|SR_PLS|THRT|UNK|URINE,NA
+40018,1,Laboratory_Result,Stat,vocab validity,E|R|S|U,NA
+40019,1,Laboratory_Result,Pt_Loc,vocab validity,E|H|I|O|U,NA
+40020,1,Laboratory_Result,Result_Loc,vocab validity,L|P,NA
+40021,1,Laboratory_Result,Modifier_low,vocab validity,EQ|GE|GT,NA
+40022,1,Laboratory_Result,Modifier_high,vocab validity,EQ|LE|LT,NA
+40023,1,Laboratory_Result,Abn_ind,vocab validity,AB|AH|AL|CH|CL|CR|IN|NL|UN,NA
+40024,1,Laboratory_Result,MS_Result_C,vocab validity,BORDERLINE|NEGATIVE|POSITIVE|UNDETERMINED|(RANGE),NA
+40025,1,Laboratory_Result,Modifier,vocab validity,EQ|GE|GT|LE|LT|TX,NA
+40026,1,Vital_Signs,BP_Type,vocab validity,E|M|O|R,NA
+40027,1,Vital_Signs,Position,vocab validity,1|2|3,NA
+40028,1,Vital_Signs,Tobacco,vocab validity,1|2|3|4|5|6|7,NA
+40029,1,Vital_Signs,Tobacco_Type,vocab validity,1|2|3|4,NA
+40030,2,person,gender_concept_id,vocab validity,(domain_id='Gender') AND (standard_concept='S'),NA
+40031,2,person,gender_source_concept_id,vocab validity,(domain_id='Gender'),NA
+40032,2,person,race_concept_id,vocab validity,(domain_id='Race') AND (standard_concept='S'),NA
+40033,2,person,race_source_concept_id,vocab validity,(domain_id='Race'),NA
+40034,2,person,ethnicity_concept_id,vocab validity,(domain_id='Ethnicity') AND (standard_concept='S'),NA
+40035,2,person,ethnicity_source_concept_id,vocab validity,(domain_id='Ethnicity'),NA
+40036,2,observation_period,period_type_concept_id,vocab validity,(domain_id='Type Concept') AND (standard_concept='S'),NA
+40037,2,drug_exposure,drug_concept_id,vocab validity,(domain_id='Drug') AND ((vocabulary_id='RxNorm') OR (vocabulary_id='RxNorm Extension')) AND (standard_concept='S'),NA
+40038,2,drug_exposure,drug_source_concept_id,vocab validity,(domain_id='Drug'),NA
+40039,2,drug_exposure,drug_type_concept_id,vocab validity,(domain_id='Type Concept') AND (standard_concept='S'),NA
+40040,2,drug_exposure,route_concept_id,vocab validity,(domain_id='Route') AND (standard_concept='S'),NA
+40041,2,visit_occurrence,visit_concept_id,vocab validity,(domain_id='Visit') AND (standard_concept='S'),NA
+40042,2,visit_occurrence,visit_source_concept_id,vocab validity,(domain_id='Visit'),NA
+40043,2,visit_occurrence,visit_type_concept_id,vocab validity,(domain_id='Type Concept') AND (standard_concept='S'),NA
+40044,2,condition_occurrence,condition_source_concept_id,vocab validity,(domain_id='Condition'),NA
+40045,2,condition_occurrence,condition_concept_id,vocab validity,(domain_id='Condition') AND (vocabulary_id='SNOMED') AND (concept_class_id='Clinical Finding') AND (standard_concept='S'),NA
+40046,2,condition_occurrence,condition_type_concept_id,vocab validity,(domain_id='Type Concept') AND (standard_concept='S'),NA
+40047,2,procedure_occurrence,procedure_source_concept_id,vocab validity,(domain_id='Procedure'),NA
+40048,2,procedure_occurrence,procedure_type_concept_id,vocab validity,(domain_id='Type Concept') AND (standard_concept='S'),NA
+40049,2,measurement,measurement_concept_id,vocab validity,(domain_id='Measurement') AND (vocabulary_id='LOINC') AND (concept_class_id='Lab Test') AND (standard_concept='S'),NA
+40050,2,measurement,measurement_type_concept_id,vocab validity,(domain_id='Type Concept') AND (standard_concept='S'),NA
+40051,2,measurement,value_as_concept_id,vocab validity,(domain_id='Meas Value') AND (concept_class_id='Answer') AND (standard_concept='S'),NA
+40052,2,measurement,unit_concept_id,vocab validity,(domain_id='Unit') AND (standard_concept='S'),NA
+40053,2,measurement,measurement_source_concept_id,vocab validity,(domain_id='Measurement') AND (vocabulary_id='EDI'),NA

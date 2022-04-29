@@ -91,7 +91,7 @@ ui.lv1<-{tabItem(tabName="Level1", shinyUI(fluidPage(
            tabBox(title=NULL, width=NULL, id="tabset1",
                   tabPanel("SCDM", div(style = 'overflow-y:scroll;height:212px;',
                                        prettyRadioButtons(inputId = "scdm_table", label = "Choose:", icon = icon("check"), bigger = TRUE, status = "info", animation = "jelly",
-                                                          choices = c("Demographic", "Enrollment", "Dispensing", "Encounter", "Diagnosis", "Procedure", "Laboratory_result", "Vital_signs")))),
+                                                          choices = c("Demographic", "Enrollment", "Dispensing", "Encounter", "Diagnosis", "Procedure", "Laboratory_Result", "Vital_Signs")))),
                   tabPanel("OMOP", div(style = 'overflow-y:scroll;height:212px;',
                                        prettyRadioButtons(inputId = "omop_table", label = "Choose:", icon = icon("check"), bigger = TRUE, status = "info", animation = "jelly",
                                                           choices = c("person", "observation_period", "drug_exposure", "visit_occurrence", "condition_occurrence", "procedure_occurrence", "measurement"))))
@@ -122,7 +122,7 @@ ui.lv2<-{tabItem(tabName="Level2", shinyUI(fluidPage(
                                        prettyRadioButtons(inputId = "scdm_table_lv2", label = "Choose:", icon = icon("check"),
                                                           bigger = TRUE, status = "info", animation = "jelly",
                                                           choices = c("Demographic", "Enrollment", "Dispensing", "Encounter",
-                                                                      "Diagnosis", "Procedure", "Laboratory_result", "Vital_signs")))),
+                                                                      "Diagnosis", "Procedure", "Laboratory_Result", "Vital_Signs")))),
                   tabPanel("OMOP", div(style = 'overflow-y:scroll;height:212px;',
                                        prettyRadioButtons(inputId = "omop_table_lv2", label = "Choose:", icon = icon("check"),
                                                           bigger = TRUE, status = "info", animation = "jelly",

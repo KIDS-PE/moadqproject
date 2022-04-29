@@ -1,7 +1,7 @@
 "step" "rule" "status"
-"1-1" "Consistency" TRUE
-"1-2" "Uniqueness" TRUE
-"1-3" "Completeness" TRUE
-"1-4" "Validity" TRUE
-"1-5" "Accuracy" TRUE
-"2-1" "Distribution" FALSE
+"1" "1-1" "Consistency" FALSE
+"2" "1-2" "Uniqueness" FALSE
+"3" "1-3" "Completeness" FALSE
+"4" "1-4" "Validity" FALSE
+"5" "1-5" "Accuracy" FALSE
+"6" "2-1" "Distribution" FALSE
