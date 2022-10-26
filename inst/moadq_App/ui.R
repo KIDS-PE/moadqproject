@@ -20,7 +20,7 @@ ui.configuration<-{tabItem(tabName = 'Configuration',
                                column(width=2, textInput("host", "Host")),
                                column(width=2, textInput("port", "Port")),
                                column(width=2, textInput("username", "Username")),
-                               column(width=2,  passwordInput("pw", "Password   ")))
+                               column(width=2,  passwordInput("password", "Password   ")))
                              )),
                              fluidRow(
                                box(title="Schema", solidHeader = FALSE, width=12, collapsible = TRUE,
