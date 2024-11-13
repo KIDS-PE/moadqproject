@@ -62,7 +62,7 @@ sql2<- translate('select count(*) as "A" FROM @B."@C" WHERE "@A" IS NULL', targe
     if(is_consistent(tmp2)[[1]]==TRUE){
       tmp3<-dbGetQuery(con, render(sql1, B=schema, C=tmp2$table)); names(tmp3)<-toupper(names(tmp3))
       tmp4<-dbGetQuery(con, render(sql2, A=tmp2$field, B=schema, C=tmp2$table)); names(tmp4)<-toupper(names(tmp4))
-      result<-round(tmp3$A/tmp4$A100, 0)
+      result<-round(tmp4$A/tmp3$A*100, 0)
     } else{result<-NA}
 
     cbind(tmp2, result)
