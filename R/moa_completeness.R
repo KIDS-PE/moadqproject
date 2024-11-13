@@ -51,8 +51,6 @@ moa_completeness<-function(){
 #
 #  }
 
-# close(pb)
-
 
 sql1<- translate('select count(*) as "A" FROM @B."@C"', targetDialect = mydbtype)  
 sql2<- translate('select count(*) as "A" FROM @B."@C" WHERE "@A" IS NULL', targetDialect = mydbtype)
@@ -70,7 +68,7 @@ sql2<- translate('select count(*) as "A" FROM @B."@C" WHERE "@A" IS NULL', targe
     cbind(tmp2, result)
   }
 
-
+ close(pb)
   
 clusterEvalQ(cl, {library(DatabaseConnector); disconnect(con); NULL})
 
