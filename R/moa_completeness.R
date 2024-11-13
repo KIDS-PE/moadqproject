@@ -60,9 +60,9 @@ sql2<- translate('select count(*) as "A" FROM @B."@C" WHERE "@A" IS NULL', targe
     tmp1<-which(completeness_rule$rule_id==i); tmp2<-completeness_rule[tmp1,]
     if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
     if(is_consistent(tmp2)[[1]]==TRUE){
-      tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=schema, C=tmp2$table)); names(tmp3)<-toupper(names(tmp3))
+      tmp3<-dbGetQuery(con, render(sql1, B=schema, C=tmp2$table)); names(tmp3)<-toupper(names(tmp3))
       tmp4<-dbGetQuery(con, render(sql2, A=tmp2$field, B=schema, C=tmp2$table)); names(tmp4)<-toupper(names(tmp4))
-      result<-round(tmp3/tmp4*100, 0)
+      result<-round(tmp3$A/tmp4$A100, 0)
     } else{result<-NA}
 
     cbind(tmp2, result)
