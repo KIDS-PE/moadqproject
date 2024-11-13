@@ -36,7 +36,6 @@ moa_validity<-function(){
                    where "@A" not in (select distinct concept_id from @D.concept where @E)', 
                    targetDialect = mydbtype)
   sql3<-translate('select count("@A") from @B."@C"', targetDialect = mydbtype)
-
   
   n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
   clusterEvalQ(cl, { library(moadqproject); con <- connect_DB(); NULL })
