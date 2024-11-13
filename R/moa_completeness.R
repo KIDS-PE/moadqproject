@@ -40,6 +40,7 @@ completeness_result <-
     if(tmp2$level==1){schema=myschemaname_lv1}; if(tmp2$level==2){schema=myschemaname_lv2}
     if(is_consistent(tmp2)[[1]]==TRUE){
       tmp3<-dbGetQuery(con, render(sql, A=tmp2$field, B=schema, C=tmp2$table))
+      names(tmp3)<-toupper(names(tmp3)
       tmp3$A<-gsub(' ', '', as.character(tmp3$A))
       tmp4<-is.na(tmp3$A)|tmp3$A==''
       if(length(tmp4)==0){result<-NA}else{result<-round((sum(tmp4)/length(tmp4))*100, 0)}
