@@ -47,6 +47,7 @@ completeness_result <-
     } else{result<-NA}
 
     cbind(tmp2, result)
+    gc()
 
   }
 
