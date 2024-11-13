@@ -43,13 +43,16 @@ moa_validity<-function(){
         if(tmp2$rule=='vocab validity'){
           if(tmp2$level==1){
             tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv1, C=tmp2$table))
+            names(tmp3)<-toupper(names(tmp3))
             tmp4<-unlist(strsplit(tmp2$ref, split = '\\|'))
             tmp5<-tmp3$A%in%tmp4==FALSE
             result<-round((sum(tmp5)/length(tmp5))*100, 0)
           }
           if(tmp2$level==2){
             tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv2, C=tmp2$table))
+            names(tmp3)<-toupper(names(tmp3))
             tmp4<-dbGetQuery(con, render(sql2, B=myvocabschemaname, D=tmp2$ref))
+            names(tmp4)<-toupper(names(tmp4))
             tmp5<-tmp3$A%in%tmp4$concept_id==FALSE
             result<-round((sum(tmp5)/length(tmp5))*100, 0)
           }
