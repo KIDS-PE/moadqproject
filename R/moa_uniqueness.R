@@ -40,11 +40,13 @@ uniqueness_result<-
       if(tmp2$rule=='global uniqueness'){
         sql<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
         tmp3<-dbGetQuery(con, render(sql, A=tmp2$field, B=schema, C=tmp2$table))
+        names(tmp3)<-toupper(names(tmp3))
         tmp4<-duplicated(tmp3$A)|duplicated(tmp3$A, fromLast = TRUE)
         result<-round(sum(tmp4)/length(tmp4)*100, 0)}
       if(tmp2$rule=='local uniqueness'){
         sql<-translate('select "@A" as "A", "@B" as "B" from @C."@D"', targetDialect = mydbtype)
         tmp3<-dbGetQuery(con, render(sql, A=tmp2$field, B=tmp2$ref, C=schema, D=tmp2$table))
+        names(tmp3)<-toupper(names(tmp3))
         tmp4<-tmp3%>%group_by(B)%>%mutate(distinct_values=n_distinct(A))
         tmp4<-tmp4$distinct_values>1
         result<-round(sum(tmp4)/length(tmp4)*100, 0)}
