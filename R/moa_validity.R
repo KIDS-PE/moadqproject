@@ -27,9 +27,17 @@ moa_validity<-function(){
   myschemaname_lv2=con_info$schemaname_lv2
   myvocabschemaname=con_info$schemaname_vocab
 
-  sql1<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
-  sql2<-translate('select distinct concept_id from @B.concept where @D', targetDialect = mydbtype)
+#  sql1<-translate('select "@A" as "A" from @B."@C"', targetDialect = mydbtype)
+#  sql2<-translate('select distinct concept_id from @B.concept where @D', targetDialect = mydbtype)
 
+  sql1<-translate('select count("@A") from @B."@C"
+                   where "@A" not in @D', targetDialect = mydbtype)
+  sql2<-translate('select count("@A") as "A" from @B."@C"
+                   where "@A" not in (select distinct concept_id from @D.concept where @E)', 
+                   targetDialect = mydbtype)
+  sql3<-translate('select count("@A") from @B."@C"', targetDialect = mydbtype)
+
+  
   n_core<-detectCores(); cl=makeCluster(n_core-1); registerDoSNOW(cl)
   clusterEvalQ(cl, { library(moadqproject); con <- connect_DB(); NULL })
 
