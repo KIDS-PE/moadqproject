@@ -36,30 +36,61 @@ moa_validity<-function(){
   iterations<-nrow(validity_rule); pb <- txtProgressBar(max = iterations, style = 3)
   progress <- function(n) setTxtProgressBar(pb, n); opts <- list(progress = progress)
 
+#  validity_result<-
+#    foreach(i=validity_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'moadqproject'), .noexport="con", .options.snow = opts)%dopar%{
+#      tmp1<-which(validity_rule$rule_id==i); tmp2<-validity_rule[tmp1,]
+#      if(is_consistent(tmp2)[[1]]==TRUE){
+#        if(tmp2$rule=='vocab validity'){
+#          if(tmp2$level==1){
+#            tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv1, C=tmp2$table))
+#            names(tmp3)<-toupper(names(tmp3))
+#            tmp4<-unlist(strsplit(tmp2$ref, split = '\\|'))
+#            tmp5<-tmp3$A%in%tmp4==FALSE
+#            result<-round((sum(tmp5)/length(tmp5))*100, 0)
+#          }
+#          if(tmp2$level==2){
+#            tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv2, C=tmp2$table))
+#            names(tmp3)<-toupper(names(tmp3))
+#            tmp4<-dbGetQuery(con, render(sql2, B=myvocabschemaname, D=tmp2$ref))
+#            names(tmp4)<-toupper(names(tmp4))
+#            tmp5<-tmp3$A%in%tmp4$concept_id==FALSE
+#            result<-round((sum(tmp5)/length(tmp5))*100, 0)
+#          }
+#        }} else{result<-NA}
+#
+#      cbind(tmp2, result)
+#    }
+
+
   validity_result<-
     foreach(i=validity_rule$rule_id, .combine=rbind, .packages=c('dplyr', 'SqlRender', 'DBI', 'moadqproject'), .noexport="con", .options.snow = opts)%dopar%{
       tmp1<-which(validity_rule$rule_id==i); tmp2<-validity_rule[tmp1,]
       if(is_consistent(tmp2)[[1]]==TRUE){
         if(tmp2$rule=='vocab validity'){
           if(tmp2$level==1){
-            tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv1, C=tmp2$table))
+            valid_list<-unlist(strsplit(tmp2$ref, split = '\\|'))
+            tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv1, C=tmp2$table,
+                                         D=paste0("('", paste0(valid_list, collapse="','"), "')")))
             names(tmp3)<-toupper(names(tmp3))
-            tmp4<-unlist(strsplit(tmp2$ref, split = '\\|'))
-            tmp5<-tmp3$A%in%tmp4==FALSE
-            result<-round((sum(tmp5)/length(tmp5))*100, 0)
+            tmp4<-dbGetQuery(con, render(sql3, A=tmp2$field, B=myschemaname_lv1, C=tmp2$table))
+            result<-round(tmp3$A/tmp4$count*100, 0)
           }
           if(tmp2$level==2){
-            tmp3<-dbGetQuery(con, render(sql1, A=tmp2$field, B=myschemaname_lv2, C=tmp2$table))
+            tmp3<-dbGetQuery(con, render(sql2, A=tmp2$field, B=myschemaname_lv2, C=tmp2$table,
+                                         D=myvocabschemaname, E=tmp2$ref))
             names(tmp3)<-toupper(names(tmp3))
-            tmp4<-dbGetQuery(con, render(sql2, B=myvocabschemaname, D=tmp2$ref))
-            names(tmp4)<-toupper(names(tmp4))
-            tmp5<-tmp3$A%in%tmp4$concept_id==FALSE
-            result<-round((sum(tmp5)/length(tmp5))*100, 0)
+            tmp4<-dbGetQuery(con, render(sql3, A=tmp2$field, B=myschemaname_lv2, C=tmp2$table))
+            result<-round(tmp3$A/tmp4$count*100, 0)
           }
         }} else{result<-NA}
 
       cbind(tmp2, result)
     }
+
+
+
+
+  
   close(pb)
 
   clusterEvalQ(cl, {library(DatabaseConnector); disconnect(con); NULL})
